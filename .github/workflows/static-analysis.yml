@@ -8,6 +8,6 @@ on:
 jobs:
   static-analysis:
     name: Run cppcheck
-    uses: nasa/cFS/.github/workflows/static-analysis.yml@main
+    uses: ArielSAdams/cFS/.github/workflows/static-analysis.yml@Test
     with:
       strict-dir-list: './modules/core_api/fsw ./modules/core_private/fsw ./modules/es/fsw ./modules/evs/fsw ./modules/fs/fsw ./modules/msg/fsw ./modules/resourceid/fsw ./modules/sb/fsw ./modules/sbr/fsw ./modules/tbl/fsw ./modules/time/fsw -UCFE_PLATFORM_TIME_CFG_CLIENT -DCFE_PLATFORM_TIME_CFG_SERVER'
