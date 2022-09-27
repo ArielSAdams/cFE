@@ -2095,7 +2095,7 @@ void Test_Misc(void)
     EVS_AppDataSetUsed(AppDataPtr, AppID);
     AppDataPtr->ActiveFlag = true;
     AppDataPtr->EventTypesActiveFlag |= CFE_EVS_INFORMATION_BIT;
-    EVS_SendEvent(0, CFE_EVS_EventType_INFORMATION, msg);
+    EVS_SendEvent(0, CFE_EVS_EventType_INFORMATION, "%s", msg);
     UtAssert_UINT32_EQ(CFE_EVS_Global.EVS_TlmPkt.Payload.MessageTruncCounter, 1);
 
     /* Use all AppData and report housekeeping to get branch coverage */
