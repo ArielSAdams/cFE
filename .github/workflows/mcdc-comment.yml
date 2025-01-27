@@ -19,7 +19,8 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: mcdc.yml
           branch: main
-          name: MCDC Results
+          name: MCDC results
+          path: ./main-branch-results
           
       - name: 'Download PR artifact'
         id: download-artifact
@@ -64,6 +65,7 @@ jobs:
         if: steps.download-artifact.outputs.result == 'ok'
         run: |
           unzip mcdc-results.zip
+          unzip ./main-branch-results/mcdc-results.zip
 
       - name: 'List extracted files for debugging'
         run: ls -R $GITHUB_WORKSPACE
