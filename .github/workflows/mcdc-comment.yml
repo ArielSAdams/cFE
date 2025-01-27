@@ -64,9 +64,9 @@ jobs:
               archive_format: 'zip',
             });
             
-            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/main-mcdc-results.zip`, Buffer.from(download.data));
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/mcdc-results.zip`, Buffer.from(download.data));
 
-            console.log('Artifact downloaded to `main-mcdc-results.zip`');
+            console.log('Artifact downloaded to `mcdc-results.zip`');
             console.log('result: "ok"');
             
             return 'ok';
