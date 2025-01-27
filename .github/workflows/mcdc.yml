@@ -107,7 +107,56 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.number }}
         run: echo $PR_NUMBER > pr_number
-      
+
+      - name: Get Latest Successful Run from `main` Branch
+        id: get_main_run
+        uses: octokit/request-action@v2
+        with:
+          route: GET /repos/${{ github.repository }}/actions/runs
+          headers: '{"accept": "application/vnd.github.v3+json"}'
+          data: '{"status": "success", "branch": "main"}'
+
+      - name: Download Artifact from Latest Main Run
+        id: download_artifact
+        run: |
+          # Get the latest successful run ID from the previous step
+          latest_run_id=$(echo "${{ steps.get_main_run.outputs.data }}" | jq '.[0].id')
+
+          if [ -z "$latest_run_id" ]; then
+            echo "No successful runs found for the main branch."
+            exit 1
+          fi
+
+          echo "Latest successful run ID: $latest_run_id"
+          
+          # Get the artifact ID associated with this run (assuming the artifact is named 'MCDC results')
+          artifact_id=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${latest_run_id}/artifacts" | \
+            jq -r '.artifacts[] | select(.name == "MCDC results") | .id')
+
+          if [ -z "$artifact_id" ]; then
+            echo "No 'MCDC results' artifact found."
+            exit 1
+          fi
+
+          # Download the artifact
+          curl -sL \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${artifact_id}/zip" \
+            -o mcdc-results.zip
+
+      - name: Unzip the downloaded artifact
+        run: |
+          unzip "MCDC Results.zip" -d mcdc_main_branch
+          echo "Artifact unzipped to mcdc_main_branch directory"
+
+      - name: Rename extracted files/folder
+        run: |
+          # Rename the mcdc-results.txt file
+          mv mcdc_main_branch/mcdc_results.txt mcdc_main_branch/main_mcdc_results.txt
+          echo "Renamed 'mcdc_results.txt' to 'main_mcdc_results.txt'"
+
       - name: Archive unit test results
         # Upload if success or failure which supports skipping, unlike always()
         if: success() || failure()
@@ -127,3 +176,4 @@ jobs:
             **/*.gcov
             mcdc_results.txt
             pr_number
+            mcdc_main_branch/main_mcdc_results.txt
