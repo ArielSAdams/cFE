@@ -80,7 +80,7 @@ jobs:
       - name: Compare main and PR artifacts
         run: |
           # Run comparison between main and PR artifact
-          bash .github/scripts/compare_mcdc.sh ./main-branch-results/mcdc_results.txt mcdc_results.txt
+          bash .github/scripts/mcdc-compare.sh ./main-branch-results/mcdc_results.txt mcdc_results.txt
 
       - name: Comment comparison to pull request
         if: steps.download-artifact.outputs.result == 'ok'
