@@ -55,7 +55,10 @@ jobs:
       - name: 'Unzip artifact'
         if: steps.download-artifact.outputs.result == 'ok'
         run: unzip mcdc-results.zip
-        
+
+      - name: 'List extracted files for debugging'
+        run: ls -R $GITHUB_WORKSPACE
+
       - name: Post comment to pull request
         if: steps.download-artifact.outputs.result == 'ok'
         uses: actions/github-script@v7
@@ -65,11 +68,12 @@ jobs:
             const fs = require('fs');
             const path = require('path');
 
-            const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'mcdc_results', 'mcdc_results.txt');
+            // Adjust the path based on where you see mcdc_results.txt after running the 'ls' command
+            const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'mcdc_results.txt');
 
-            // Check if the mcdc_results.txt file exists
+            // Debugging: Check if the file exists at the adjusted path
             if (!fs.existsSync(mcdcResultsFilePath)) {
-              console.log('mcdc_results.txt file not found');
+              console.log('mcdc_results.txt file not found at path: ' + mcdcResultsFilePath);
               return;
             }
 
@@ -96,8 +100,6 @@ jobs:
               comment.user.login === 'github-actions[bot]'
             );
 
-            // If github-actions[bot] already made a comment, update it,
-            // otherwise create a new comment.
             if (previousComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
