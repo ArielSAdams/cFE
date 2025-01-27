@@ -75,6 +75,9 @@ jobs:
           ref: main
           sparse-checkout: |
             .github/scripts
+
+      - name: LS
+        run: ls -l
         
       # add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts
