@@ -110,7 +110,7 @@ jobs:
 
       - name: Get Latest Successful Run from `main` Branch
         id: get_main_run
-        uses: octokit/request-action@v2
+        uses: octokit/request-action@v2.4.0
         with:
           route: GET /repos/${{ github.repository }}/actions/runs
           headers: '{"accept": "application/vnd.github.v3+json"}'
