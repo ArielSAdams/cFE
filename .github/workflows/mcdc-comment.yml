@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: 'Download latest main branch artifact'
         id: main-artifact
-        uses: actions/github-script@7 
+        uses: actions/github-script@v7 
         with:
           results-encoding: string
           script: |
