@@ -88,47 +88,45 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const fs = require('fs');
-            const path = require('path');
-            // Check if the comparison result file exists
-            const comparisonResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'comparison_results.txt');
-            if (!fs.existsSync(comparisonResultsFilePath)) {
-              console.log('comparison_results.txt file not found at path: ' + comparisonResultsFilePath);
-              return;
-            }
-
-            // Read the comparison results
-            const comparisonResults = `MCDC Comparison Results:
-            \`\`\`
-            ${fs.readFileSync(comparisonResultsFilePath, 'utf-8')}
-            \`\`\`
-            `;
-            
-            const prNumber = Number(fs.readFileSync('pr_number'));
-            const comments = await github.paginate(
-              github.rest.issues.listComments,
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
+              const fs = require('fs');
+              const path = require('path');
+              // Adjust the path based on where you see mcdc_results.txt after running the 'ls' command
+              const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'comparison_results.txt');
+              // Debugging: Check if the file exists at the adjusted path
+              if (!fs.existsSync(mcdcResultsFilePath)) {
+                console.log('comparison_results.txt file not found at path: ' + mcdcResultsFilePath);
+                return;
               }
-            );
-            comments.reverse();
-            const previousComment = comments.find(comment =>
-              comment.user.login === 'github-actions[bot]'
-            );
-            if (previousComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: previousComment.id,
-                body: comparisonResults,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body: comparisonResults,
-              });
-            }
+              const mcdcResults = `MCDC Results:
+              \`\`\`
+              ${fs.readFileSync(mcdcResultsFilePath, 'utf-8')}
+              \`\`\`
+              `;
+              const prNumber = Number(fs.readFileSync('pr_number'));
+              const comments = await github.paginate(
+                github.rest.issues.listComments,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                }
+              );
+              comments.reverse();
+              const previousComment = comments.find(comment =>
+                comment.user.login === 'github-actions[bot]'
+              );
+              if (previousComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: previousComment.id,
+                  body: mcdcResults,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: mcdcResults,
+                });
+              }
