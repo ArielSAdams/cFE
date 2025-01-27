@@ -69,6 +69,13 @@ jobs:
       - name: 'List extracted files for debugging'
         run: ls -R $GITHUB_WORKSPACE
 
+      - name: Checkout Script
+        uses: actions/checkout@v4        
+        with:
+          ref: main
+          sparse-checkout: |
+            .github/scripts
+        
       # add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts
         run: |
