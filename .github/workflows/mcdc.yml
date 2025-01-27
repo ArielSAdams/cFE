@@ -126,3 +126,4 @@ jobs:
           path: |
             **/*.gcov
             mcdc_results.txt
+            pr_number
