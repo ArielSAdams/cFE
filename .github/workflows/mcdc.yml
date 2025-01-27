@@ -122,13 +122,13 @@ jobs:
         id: download_artifact
         run: |
           # Get the latest successful run ID from the previous step
-          latest_run_id=$(echo "${{ steps.get_main_run.outputs.data }}" | jq '.[0].id')
-
+          latest_run_id=$(echo "${{ steps.get_main_run.outputs.data }}" | jq -r '.[0].id')
+          
           if [ -z "$latest_run_id" ]; then
             echo "No successful runs found for the main branch."
             exit 1
           fi
-
+          
           echo "Latest successful run ID: $latest_run_id"
           
           # Get the artifact ID associated with this run (assuming the artifact is named 'MCDC Results')
@@ -136,18 +136,20 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs/${latest_run_id}/artifacts" | \
             jq -r '.artifacts[] | select(.name == "MCDC Results") | .id')
-
+          
           if [ -z "$artifact_id" ]; then
             echo "No 'MCDC Results' artifact found."
             exit 1
           fi
-
+          
+          echo "Artifact ID: $artifact_id"
+          
           # Download the artifact
           curl -sL \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${artifact_id}/zip" \
             -o "MCDC Results.zip"
-
+  
       - name: Unzip the downloaded artifact
         run: |
           unzip "MCDC Results.zip" -d mcdc_main_branch
