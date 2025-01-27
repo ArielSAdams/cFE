@@ -81,6 +81,7 @@ jobs:
           ls -l
           echo "Checking if mcdc_results.txt exists:"
           ls -l "$GITHUB_WORKSPACE/main-branch-results"
+          chmod -R +r "$GITHUB_WORKSPACE/main-branch-results"
         
       # add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts
