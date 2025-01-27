@@ -66,16 +66,16 @@ jobs:
         run: |
           unzip mcdc-results.zip
 
-      - name: Show main artifacts
-        run: |
-          cat main-branch-results/mcdc_results.txt
-
       - name: 'List extracted files for debugging'
         run: ls -R $GITHUB_WORKSPACE
 
       # add step to reference new script that calculates difference between main artifact and pr artifact
+      - name: Compare main and PR artifacts
+        run: |
+          # Run comparison between main and PR artifact
+          bash .github/scripts/compare_mcdc.sh ./main-branch-results/mcdc_results.txt mcdc_results.txt
 
-      - name: Post comment to pull request
+      - name: Comment comparison to pull request
         if: steps.download-artifact.outputs.result == 'ok'
         uses: actions/github-script@v7
         with:
@@ -83,23 +83,20 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-
-            // Adjust the path based on where you see mcdc_results.txt after running the 'ls' command
-            const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'mcdc_results.txt');
-
-            // Debugging: Check if the file exists at the adjusted path
-            if (!fs.existsSync(mcdcResultsFilePath)) {
-              console.log('mcdc_results.txt file not found at path: ' + mcdcResultsFilePath);
+            // Check if the comparison result file exists
+            const comparisonResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'comparison_results.txt');
+            if (!fs.existsSync(comparisonResultsFilePath)) {
+              console.log('comparison_results.txt file not found at path: ' + comparisonResultsFilePath);
               return;
             }
 
-            const mcdcResults = `MCDC Results:
-
+            // Read the comparison results
+            const comparisonResults = `MCDC Comparison Results:
             \`\`\`
-            ${fs.readFileSync(mcdcResultsFilePath, 'utf-8')}
+            ${fs.readFileSync(comparisonResultsFilePath, 'utf-8')}
             \`\`\`
             `;
-
+            
             const prNumber = Number(fs.readFileSync('pr_number'));
             const comments = await github.paginate(
               github.rest.issues.listComments,
@@ -109,25 +106,22 @@ jobs:
                 issue_number: prNumber,
               }
             );
-
             comments.reverse();
-
             const previousComment = comments.find(comment =>
               comment.user.login === 'github-actions[bot]'
             );
-
             if (previousComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: previousComment.id,
-                body: mcdcResults,
+                body: comparisonResults,
               });
             } else {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
-                body: mcdcResults,
+                body: comparisonResults,
               });
             }
