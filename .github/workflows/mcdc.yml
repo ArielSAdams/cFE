@@ -110,11 +110,13 @@ jobs:
 
       - name: Get Latest Successful Run from `main` Branch
         id: get_main_run
-        uses: octokit/request-action@v2.4.0
+        uses: octokit/request-action@v2.x
         with:
           route: GET /repos/${{ github.repository }}/actions/runs
-          headers: '{"accept": "application/vnd.github.v3+json"}'
-          data: '{"status": "success", "branch": "main"}'
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+          mediaType: |
+            format: raw
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -131,14 +133,14 @@ jobs:
 
           echo "Latest successful run ID: $latest_run_id"
           
-          # Get the artifact ID associated with this run (assuming the artifact is named 'MCDC results')
+          # Get the artifact ID associated with this run (assuming the artifact is named 'MCDC Results')
           artifact_id=$(curl -s \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs/${latest_run_id}/artifacts" | \
-            jq -r '.artifacts[] | select(.name == "MCDC results") | .id')
+            jq -r '.artifacts[] | select(.name == "MCDC Results") | .id')
 
           if [ -z "$artifact_id" ]; then
-            echo "No 'MCDC results' artifact found."
+            echo "No 'MCDC Results' artifact found."
             exit 1
           fi
 
@@ -146,7 +148,7 @@ jobs:
           curl -sL \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${artifact_id}/zip" \
-            -o mcdc-results.zip
+            -o "MCDC Results.zip"
 
       - name: Unzip the downloaded artifact
         run: |
