@@ -113,8 +113,6 @@ jobs:
         uses: octokit/request-action@v2.x
         with:
           route: GET /repos/${{ github.repository }}/actions/runs
-          owner: ${{ github.repository_owner }}
-          repo: ${{ github.repository }}
           mediaType: |
             format: raw
         env:
