@@ -65,7 +65,10 @@ jobs:
         if: steps.download-artifact.outputs.result == 'ok'
         run: |
           unzip mcdc-results.zip
-          unzip ./main-branch-results/mcdc-results.zip
+
+      - name: Show main artifacts
+        run: |
+          cat main-branch-results/mcdc_results.txt
 
       - name: 'List extracted files for debugging'
         run: ls -R $GITHUB_WORKSPACE
