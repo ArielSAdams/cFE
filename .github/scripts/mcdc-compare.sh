@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Navigate to the root of the repository
+cd $GITHUB_WORKSPACE
+
 # Function to extract the relevant numbers from a file
 extract_numbers() {
   file=$1
