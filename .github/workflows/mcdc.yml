@@ -115,6 +115,8 @@ jobs:
           route: GET /repos/${{ github.repository }}/actions/runs
           headers: '{"accept": "application/vnd.github.v3+json"}'
           data: '{"status": "success", "branch": "main"}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Artifact from Latest Main Run
         id: download_artifact
