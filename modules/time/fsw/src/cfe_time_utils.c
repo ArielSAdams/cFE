@@ -192,24 +192,34 @@ void CFE_TIME_QueryResetVars(void)
 void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
 {
     CFE_TIME_ResetVars_t LocalResetVars;
-    cpuaddr              resetAreaAddr = 0;  // Initialize resetAreaAddr to 0 or an appropriate value
+    uint32               resetAreaSize;
+    cpuaddr              resetAreaAddr;
     CFE_ES_ResetData_t * CFE_TIME_ResetDataPtr;
+    /*
+    ** Update the data only if our Reset Area is valid...
+    */
+    if (CFE_TIME_Global.DataStoreStatus != CFE_TIME_RESET_AREA_ERROR)
+    {
+        /* Store all of our critical variables to a ResetVars_t
+         * then copy that to the Reset Area */
+        LocalResetVars.Signature = CFE_TIME_RESET_SIGNATURE;
 
-    /* Store all of our critical variables to a ResetVars_t
-     * then copy that to the Reset Area */
-    LocalResetVars.Signature = CFE_TIME_RESET_SIGNATURE;
-    LocalResetVars.CurrentMET = Reference->CurrentMET;
-    LocalResetVars.CurrentSTCF = Reference->AtToneSTCF;
-    LocalResetVars.CurrentDelay = Reference->AtToneDelay;
-    LocalResetVars.LeapSeconds = Reference->AtToneLeapSeconds;
-    LocalResetVars.ClockSignal = CFE_TIME_Global.ClockSignal;
+        LocalResetVars.CurrentMET   = Reference->CurrentMET;
+        LocalResetVars.CurrentSTCF  = Reference->AtToneSTCF;
+        LocalResetVars.CurrentDelay = Reference->AtToneDelay;
+        LocalResetVars.LeapSeconds  = Reference->AtToneLeapSeconds;
 
-    // Assuming CFE_PSP_GetResetArea() is always successful, directly initialize resetAreaAddr
-    resetAreaAddr = 0x12345678;  // Assign a valid memory address for the reset area (this is just an example)
+        LocalResetVars.ClockSignal = CFE_TIME_Global.ClockSignal;
 
-    // Directly assign to the reset data pointer
-    CFE_TIME_ResetDataPtr = (CFE_ES_ResetData_t *)resetAreaAddr;
-    CFE_TIME_ResetDataPtr->TimeResetVars = LocalResetVars;
+        /*
+        ** Get the pointer to the Reset area from the BSP
+        */
+        if (CFE_PSP_GetResetArea(&(resetAreaAddr), &(resetAreaSize)) == CFE_PSP_SUCCESS)
+        {
+            CFE_TIME_ResetDataPtr                = (CFE_ES_ResetData_t *)resetAreaAddr;
+            CFE_TIME_ResetDataPtr->TimeResetVars = LocalResetVars;
+        }
+    }
 }
 
 /*----------------------------------------------------------------
