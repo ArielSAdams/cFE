@@ -22,8 +22,20 @@ compare_mcdc_results() {
   # Read modules from modules.txt (passed as argument)
   modules=$(cat "$modules_file")
 
+  # Check if modules is empty or not
+  if [ -z "$modules" ]; then
+    echo "Error: No modules found in $modules_file"
+    exit 1
+  fi
+
+  # Debug: Show the modules being processed
+  echo "Modules to be processed: $modules"
+
+  echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
+  
   # Loop through all modules to compare each one
   for module in $modules; do
+
     # Extract numbers for the main results file and PR results file for the current module
     read main_total_files main_no_condition main_condition_covered <<< $(extract_module_numbers "$main_results_file" "$module")
     read pr_total_files pr_no_condition pr_condition_covered <<< $(extract_module_numbers "$pr_results_file" "$module")
@@ -40,8 +52,16 @@ compare_mcdc_results() {
     echo "  Total files processed difference: $total_files_diff"
     echo "  Number of files with no condition data difference: $no_condition_data_diff"
     echo "  Condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%"
+    echo " "
+
+    # Output the differences to the specified output file
+    echo "Module: $module" >> comparison_results.txt
+    echo "  Total files processed difference: $total_files_diff"  >> comparison_results.txt
+    echo "  Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
+    echo "  Condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
+    echo " "  >> comparison_results.txt
+    
   done
 }
 
-# Main script execution
-compare_mcdc_results "$1" "$2" "$3"
+# Main script e
