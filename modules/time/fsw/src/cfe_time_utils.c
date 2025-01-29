@@ -211,6 +211,8 @@ void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
 
         LocalResetVars.ClockSignal = CFE_TIME_Global.ClockSignal;
 
+        
+        CFE_TIME_ResetDataPtr                = (CFE_ES_ResetData_t *)resetAreaAddr;
         CFE_TIME_ResetDataPtr->TimeResetVars = LocalResetVars;
 
 
