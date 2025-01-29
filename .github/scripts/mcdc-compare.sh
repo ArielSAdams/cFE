@@ -3,14 +3,14 @@
 # Navigate to the root of the repository
 cd $GITHUB_WORKSPACE
 
-# Function to extract the relevant numbers from a file
+# Function to extract the relevant numbers from the "Overall summary" section
 extract_numbers() {
   file=$1
 
-  # Extract values using grep and awk
-  total_files_processed=$(grep -Po 'Total files processed: \K\d+' "$file")
-  no_condition_data=$(grep -Po 'Number of files with no condition data: \K\d+' "$file")
-  condition_outcomes_covered=$(grep -Po 'Overall condition outcomes covered: \K[\d.]+(?=%)' "$file")
+  # Extract the values from the "Overall summary" section ONLY
+  total_files_processed=$(grep -Po 'Overall summary:[\s\S]+?Total files processed: \K\d+' "$file")
+  no_condition_data=$(grep -Po 'Overall summary:[\s\S]+?Number of files with no condition data: \K\d+' "$file")
+  condition_outcomes_covered=$(grep -Po 'Overall summary:[\s\S]+?Overall condition outcomes covered: \K[\d.]+(?=%)' "$file")
 
   # Return values as a space-separated string
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered"
