@@ -151,9 +151,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: MCDC results
-          path: |            
-            mcdc_results.txt
-            pr_number
           
       # Add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts      
