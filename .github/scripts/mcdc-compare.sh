@@ -7,11 +7,14 @@ extract_module_numbers() {
   file=$1
   module=$2
 
+  echo "Extracting numbers for module: $module from file: $file"  # Debugging line
+
   # Extract the values for the specific module summary
   total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed: \K\d+')
   no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data: \K\d+')
   condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered: \K[\d.]+(?=%)')
 
+  echo "Extracted values: $total_files_processed, $no_condition_data, $condition_outcomes_covered"  # Debugging line
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered"
 }
 
@@ -20,6 +23,8 @@ compare_mcdc_results() {
   main_results_file=$1
   pr_results_file=$2
   modules_file=$3
+
+  echo "Starting comparison for files: $main_results_file, $pr_results_file, modules from $modules_file"  # Debugging line
 
   # Read modules from modules.txt (passed as argument)
   modules=$(cat "$modules_file")
@@ -37,10 +42,14 @@ compare_mcdc_results() {
   
   # Loop through all modules to compare each one
   for module in $modules; do
+    echo "Processing module: $module"  # Debugging line
 
     # Extract numbers for the main results file and PR results file for the current module
     read main_total_files main_no_condition main_condition_covered <<< $(extract_module_numbers "$main_results_file" "$module")
     read pr_total_files pr_no_condition pr_condition_covered <<< $(extract_module_numbers "$pr_results_file" "$module")
+
+    echo "Main results: $main_total_files, $main_no_condition, $main_condition_covered"
+    echo "PR results: $pr_total_files, $pr_no_condition, $pr_condition_covered"
 
     # Calculate differences for each module
     total_files_diff=$((main_total_files - pr_total_files))
@@ -62,8 +71,8 @@ compare_mcdc_results() {
     echo "  Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
     echo "  Condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
     echo " "  >> comparison_results.txt
-    
   done
 }
 
-# Main script e
+# Make sure to call the comparison function with the correct arguments (this is necessary)
+compare_mcdc_results "$1" "$2" "$3"
