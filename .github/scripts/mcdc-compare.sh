@@ -1,40 +1,41 @@
 #!/bin/bash
 
-# Define full paths to the results files
-MAIN_RESULTS_FILE="./main-branch-results/mcdc_results.txt"
-PR_RESULTS_FILE="./mcdc_results.txt"
+# Navigate to the root of the repository
+cd $GITHUB_WORKSPACE
 
-# Check if the files exist
-if [[ ! -f "$MAIN_RESULTS_FILE" ]]; then
-  echo "Error: $MAIN_RESULTS_FILE not found"
-  exit 1
-fi
-
-if [[ ! -f "$PR_RESULTS_FILE" ]]; then
-  echo "Error: $PR_RESULTS_FILE not found"
-  exit 1
-fi
-
-# Extract numbers from both files
+# Function to extract the relevant numbers from a file
 extract_numbers() {
   file=$1
+
+  # Extract values using grep and awk
   total_files_processed=$(grep -Po 'Total files processed: \K\d+' "$file")
   no_condition_data=$(grep -Po 'Number of files with no condition data: \K\d+' "$file")
   condition_outcomes_covered=$(grep -Po 'Overall condition outcomes covered: \K[\d.]+(?=%)' "$file")
+
+  # Return values as a space-separated string
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered"
 }
 
-# Extract numbers from the main and PR result files
-read main_total_files main_no_condition main_condition_covered <<< $(extract_numbers "$MAIN_RESULTS_FILE")
-read pr_total_files pr_no_condition pr_condition_covered <<< $(extract_numbers "$PR_RESULTS_FILE")
+# Compare files and calculate the differences
+compare_mcdc_results() {
+  main_results_file=$1
+  pr_results_file=$2
 
-# Calculate differences
-total_files_diff=$((main_total_files - pr_total_files))
-no_condition_data_diff=$((main_no_condition - pr_no_condition))
-condition_outcomes_diff=$(echo "$main_condition_covered - $pr_condition_covered" | bc)
+  # Extract numbers from both files
+  read main_total_files main_no_condition main_condition_covered <<< $(extract_numbers "$main_results_file")
+  read pr_total_files pr_no_condition pr_condition_covered <<< $(extract_numbers "$pr_results_file")
 
-# Output the differences to a file
-echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
-echo "Total files processed difference: $total_files_diff" >> comparison_results.txt
-echo "Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
-echo "Overall condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
+  # Calculate differences
+  total_files_diff=$((main_total_files - pr_total_files))
+  no_condition_data_diff=$((main_no_condition - pr_no_condition))
+  condition_outcomes_diff=$(echo "$main_condition_covered - $pr_condition_covered" | bc)
+
+  # Output the differences to a file
+  echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
+  echo "Total files processed difference: $total_files_diff" >> comparison_results.txt
+  echo "Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
+  echo "Overall condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
+}
+
+# Compare the main branch results and PR results
+compare_mcdc_results "$1" "$2"
