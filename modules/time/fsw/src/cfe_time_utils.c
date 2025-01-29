@@ -135,17 +135,18 @@ void CFE_TIME_QueryResetVars(void)
         /* Get the structure from the Reset Area */
         LocalResetVars = CFE_TIME_ResetDataPtr->TimeResetVars;
 
-        /*
+        /* COMMENT OUT TO TEST MCDC DIFFERENCE 
+        
         ** Verify TIME data signature and clock signal selection...
         **    (other data fields have no verifiable limits)
-        */
+        
         if ((LocalResetVars.Signature == CFE_TIME_RESET_SIGNATURE) &&
             ((LocalResetVars.ClockSignal == CFE_TIME_ToneSignalSelect_PRIMARY) ||
              (LocalResetVars.ClockSignal == CFE_TIME_ToneSignalSelect_REDUNDANT)))
         {
             /*
             ** Initialize TIME to valid  Reset Area values...
-            */
+            
             RefState->AtToneMET         = LocalResetVars.CurrentMET;
             RefState->AtToneSTCF        = LocalResetVars.CurrentSTCF;
             RefState->AtToneDelay       = LocalResetVars.CurrentDelay;
@@ -158,9 +159,10 @@ void CFE_TIME_QueryResetVars(void)
         {
             /*
             ** We got a blank area from the reset variables
-            */
+            
             CFE_TIME_Global.DataStoreStatus = CFE_TIME_RESET_AREA_NEW;
         }
+        */
     }
     /*
     ** Initialize TIME to default values if no valid Reset data...
