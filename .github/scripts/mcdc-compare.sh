@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define full paths to the results files
-MAIN_RESULTS_FILE="$GITHUB_WORKSPACE/main-branch-results/mcdc_results.txt"
-PR_RESULTS_FILE="$GITHUB_WORKSPACE/mcdc_results.txt"
+MAIN_RESULTS_FILE="./main-branch-results/mcdc_results.txt"
+PR_RESULTS_FILE="./mcdc_results.txt"
 
 # Check if the files exist
 if [[ ! -f "$MAIN_RESULTS_FILE" ]]; then
