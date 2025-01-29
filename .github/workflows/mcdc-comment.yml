@@ -21,7 +21,16 @@ jobs:
           branch: main
           name: MCDC results
           path: ./main-branch-results
-          
+
+      - name: Cat
+        run: cat main-branch-results/mcdc_results.txt
+    
+      - name: LS
+        run: |
+          ls
+          cd main-branch-results
+          ls
+        
       - name: 'Download PR artifact'
         id: download-artifact
         uses: actions/github-script@v7
