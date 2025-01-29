@@ -116,7 +116,7 @@ jobs:
           name: Unit test results
           path: |
             test_results.txt
-      
+          
       - name: Archive mcdc results
         # Upload if success or failure which supports skipping, unlike always()
         if: success() || failure()
@@ -127,9 +127,19 @@ jobs:
             **/*.gcov
             mcdc_results.txt
             pr_number
+            
+  comment-mcdc:
+    needs: mcdc
+    if: github.event_name == 'pull_request'
+    name: Comment MCDC Comparision on PR
+    runs-on: ubuntu-20.04
 
+    steps:        
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        
       - name: Download latest main branch artifact      
-        if: github.event_name == 'pull_request'
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -138,9 +148,15 @@ jobs:
           name: MCDC results
           path: ./main-branch-results
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: MCDC results
+          path: |            
+            mcdc_results.txt
+            pr_number
+          
       # Add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts      
-        if: github.event_name == 'pull_request'
         run: |
           bash cfe/.github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt
 
