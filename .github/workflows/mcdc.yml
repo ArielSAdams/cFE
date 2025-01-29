@@ -97,6 +97,7 @@ jobs:
         if: success() || failure()
         run: |
           echo "MODULES=$(grep -oP 'Test #\d+: \K[\w\-\_]+' test_results.txt | tr '\n' ' ' | sed 's/ $//')" >> $GITHUB_ENV
+          echo "$MODULES" > modules.txt 
           
       - name: Run mcdc analysis
         if: success() || failure()
@@ -127,6 +128,7 @@ jobs:
             **/*.gcov
             mcdc_results.txt
             pr_number
+            modules.txt
             
   comment-mcdc:
     needs: mcdc
@@ -151,11 +153,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: MCDC results
-          
+        
       # Add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts      
         run: |
-          bash .github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt
+          bash .github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt modules.txt
 
       - name: Comment comparison to pull request
         uses: actions/github-script@v7
