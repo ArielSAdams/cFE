@@ -106,6 +106,7 @@ CFE_TIME_SysTime_t CFE_TIME_LatchClock(void)
  *-----------------------------------------------------------------*/
 void CFE_TIME_QueryResetVars(void)
 {
+    CFE_TIME_ResetVars_t                LocalResetVars;
     uint32                              DefSubsMET;
     uint32                              DefSubsSTCF;
     int32                               PspStatus;
@@ -127,7 +128,40 @@ void CFE_TIME_QueryResetVars(void)
         CFE_TIME_Global.DataStoreStatus = CFE_TIME_RESET_AREA_BAD;
     }
 
+    else
+    {
+        CFE_TIME_ResetDataPtr = (CFE_ES_ResetData_t *)resetAreaAddr;
 
+        /* Get the structure from the Reset Area */
+        LocalResetVars = CFE_TIME_ResetDataPtr->TimeResetVars;
+
+        /*
+        ** Verify TIME data signature and clock signal selection...
+        **    (other data fields have no verifiable limits)
+        */
+        if ((LocalResetVars.Signature == CFE_TIME_RESET_SIGNATURE) &&
+            ((LocalResetVars.ClockSignal == CFE_TIME_ToneSignalSelect_PRIMARY) ||
+             (LocalResetVars.ClockSignal == CFE_TIME_ToneSignalSelect_REDUNDANT)))
+        {
+            /*
+            ** Initialize TIME to valid  Reset Area values...
+            */
+            RefState->AtToneMET         = LocalResetVars.CurrentMET;
+            RefState->AtToneSTCF        = LocalResetVars.CurrentSTCF;
+            RefState->AtToneDelay       = LocalResetVars.CurrentDelay;
+            RefState->AtToneLeapSeconds = LocalResetVars.LeapSeconds;
+            CFE_TIME_Global.ClockSignal = LocalResetVars.ClockSignal;
+
+            CFE_TIME_Global.DataStoreStatus = CFE_TIME_RESET_AREA_EXISTING;
+        }
+        else
+        {
+            /*
+            ** We got a blank area from the reset variables
+            */
+            CFE_TIME_Global.DataStoreStatus = CFE_TIME_RESET_AREA_NEW;
+        }
+    }
     /*
     ** Initialize TIME to default values if no valid Reset data...
     */
@@ -177,14 +211,7 @@ void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
 
         LocalResetVars.ClockSignal = CFE_TIME_Global.ClockSignal;
 
-        /*
-        ** Get the pointer to the Reset area from the BSP
-        */
-        if (CFE_PSP_GetResetArea(&(resetAreaAddr), &(resetAreaSize)) == CFE_PSP_SUCCESS)
-        {
-            CFE_TIME_ResetDataPtr                = (CFE_ES_ResetData_t *)resetAreaAddr;
-            CFE_TIME_ResetDataPtr->TimeResetVars = LocalResetVars;
-        }
+
     }
 }
 
