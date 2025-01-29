@@ -192,7 +192,6 @@ void CFE_TIME_QueryResetVars(void)
 void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
 {
     CFE_TIME_ResetVars_t LocalResetVars;
-    uint32               resetAreaSize = 0;  // Initialize resetAreaSize to 0 or an appropriate value
     cpuaddr              resetAreaAddr = 0;  // Initialize resetAreaAddr to 0 or an appropriate value
     CFE_ES_ResetData_t * CFE_TIME_ResetDataPtr;
 
@@ -205,9 +204,8 @@ void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
     LocalResetVars.LeapSeconds = Reference->AtToneLeapSeconds;
     LocalResetVars.ClockSignal = CFE_TIME_Global.ClockSignal;
 
-    // Assuming CFE_PSP_GetResetArea() is always successful, directly initialize resetAreaAddr and resetAreaSize
+    // Assuming CFE_PSP_GetResetArea() is always successful, directly initialize resetAreaAddr
     resetAreaAddr = 0x12345678;  // Assign a valid memory address for the reset area (this is just an example)
-    resetAreaSize = sizeof(CFE_TIME_ResetVars_t);  // Assign the size of the reset data structure
 
     // Directly assign to the reset data pointer
     CFE_TIME_ResetDataPtr = (CFE_ES_ResetData_t *)resetAreaAddr;
