@@ -1,9 +1,7 @@
 name: MCDC Comment
 
 on:
-  workflow_run:
-    workflows: [Run cFE MCDC]
-    types: [completed]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
