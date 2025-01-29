@@ -28,8 +28,14 @@ compare_mcdc_results() {
   main_results_file=$1
   pr_results_file=$2
 
-  # Read the MODULES variable from GitHub Actions environment (this is passed by the workflow)
-  modules="$MODULES"
+  # Read the MODULES from the modules.txt file generated in the previous job
+  if [[ ! -f "modules.txt" ]]; then
+    echo "Error: modules.txt file not found. Ensure the file is downloaded correctly from Job 1."
+    exit 1
+  fi
+
+  # Read modules from modules.txt
+  modules=$(cat modules.txt)
 
   # Check if MODULES variable is empty
   if [[ -z "$modules" ]]; then
