@@ -142,7 +142,7 @@ jobs:
       - name: Compare main and PR artifacts      
         if: github.event_name == 'pull_request'
         run: |
-          bash .github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt
+          bash cfe/.github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt
 
       - name: Comment comparison to pull request
         if: steps.download-artifact.outputs.result == 'ok'
