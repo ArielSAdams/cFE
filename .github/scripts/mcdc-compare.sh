@@ -8,13 +8,14 @@ extract_numbers() {
   file=$1
 
   # Extract the values from the "Overall summary" section ONLY
-  total_files_processed=$(grep -Po 'Overall summary:[\s\S]+?Total files processed: \K\d+' "$file")
-  no_condition_data=$(grep -Po 'Overall summary:[\s\S]+?Number of files with no condition data: \K\d+' "$file")
-  condition_outcomes_covered=$(grep -Po 'Overall summary:[\s\S]+?Overall condition outcomes covered: \K[\d.]+(?=%)' "$file")
+  total_files_processed=$(sed -n '/^Overall summary:/,/^$/p' "$file" | grep -Po 'Total files processed: \K\d+')
+  no_condition_data=$(sed -n '/^Overall summary:/,/^$/p' "$file" | grep -Po 'Number of files with no condition data: \K\d+')
+  condition_outcomes_covered=$(sed -n '/^Overall summary:/,/^$/p' "$file" | grep -Po 'Overall condition outcomes covered: \K[\d.]+(?=%)')
 
   # Return values as a space-separated string
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered"
 }
+
 
 # Compare files and calculate the differences
 compare_mcdc_results() {
