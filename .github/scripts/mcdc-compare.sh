@@ -46,10 +46,17 @@ compare_mcdc_results() {
   fi
 
   # Output the differences to a file
-  echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
+  echo "Comparison of MCDC results between Main Branch and PR Changes:" > comparison_results.txt
   echo "Total files processed difference: $total_files_diff" >> comparison_results.txt
   echo "Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
   echo "Overall condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
+ 
+ # Output results to the terminal as well
+  echo ""
+  echo "=== Comparison of MCDC results between Main Branch and PR Changes ==="
+  echo "Total files processed difference: $total_files_diff"
+  echo "Number of files with no condition data difference: $no_condition_data_diff"
+  echo "Overall condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%"
 }
 
 # Compare the main branch results and PR results
