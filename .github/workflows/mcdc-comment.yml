@@ -12,6 +12,7 @@ concurrency:
 jobs:
   comment:
     runs-on: ubuntu-22.04
+    if: ${{ github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.head_ref == 'pull' }} 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
