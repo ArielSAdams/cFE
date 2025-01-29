@@ -191,10 +191,6 @@ void CFE_TIME_QueryResetVars(void)
  *-----------------------------------------------------------------*/
 void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
 {
-    CFE_TIME_ResetVars_t LocalResetVars;
-    uint32               resetAreaSize;
-    cpuaddr              resetAreaAddr;
-    CFE_ES_ResetData_t * CFE_TIME_ResetDataPtr;
     /*
     ** Update the data only if our Reset Area is valid...
     */
