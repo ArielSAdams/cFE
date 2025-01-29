@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Script started"
+
 # Function to extract the relevant numbers from a module's "Summary for module" section
 extract_module_numbers() {
   file=$1
@@ -31,7 +33,7 @@ compare_mcdc_results() {
   # Debug: Show the modules being processed
   echo "Modules to be processed: $modules"
 
-  echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
+  echo "Comparison of MCDC results between Main Branch and PR:" >> comparison_results.txt
   
   # Loop through all modules to compare each one
   for module in $modules; do
