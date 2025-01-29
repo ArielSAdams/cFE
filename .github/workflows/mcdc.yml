@@ -158,7 +158,6 @@ jobs:
           bash .github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt
 
       - name: Comment comparison to pull request
-        if: steps.download-artifact.outputs.result == 'ok'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
