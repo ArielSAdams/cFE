@@ -193,6 +193,7 @@ void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
 {
     
     CFE_TIME_ResetVars_t LocalResetVars;
+    CFE_ES_ResetData_t * CFE_TIME_ResetDataPtr;
     
     /*
     ** Update the data only if our Reset Area is valid...
@@ -209,6 +210,8 @@ void CFE_TIME_UpdateResetVars(const CFE_TIME_Reference_t *Reference)
         LocalResetVars.LeapSeconds  = Reference->AtToneLeapSeconds;
 
         LocalResetVars.ClockSignal = CFE_TIME_Global.ClockSignal;
+
+        CFE_TIME_ResetDataPtr->TimeResetVars = LocalResetVars;
 
 
     }
