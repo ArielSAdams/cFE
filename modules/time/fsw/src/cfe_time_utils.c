@@ -106,7 +106,7 @@ CFE_TIME_SysTime_t CFE_TIME_LatchClock(void)
  *-----------------------------------------------------------------*/
 void CFE_TIME_QueryResetVars(void)
 {
-    CFE_TIME_ResetVars_t                LocalResetVars;
+   /* CFE_TIME_ResetVars_t                LocalResetVars; */
     uint32                              DefSubsMET;
     uint32                              DefSubsSTCF;
     int32                               PspStatus;
