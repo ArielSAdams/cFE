@@ -79,18 +79,11 @@ jobs:
 
       - name: 'List extracted files for debugging'
         run: ls -R $GITHUB_WORKSPACE
-
-      - name: Checkout Script
-        uses: actions/checkout@v4        
-        with:
-          ref: main
-          sparse-checkout: |
-            .github/scripts
         
       # add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts
         run: |
-          bash .github/scripts/mcdc-compare.sh
+          bash .github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt
 
       - name: Comment comparison to pull request
         if: steps.download-artifact.outputs.result == 'ok'
