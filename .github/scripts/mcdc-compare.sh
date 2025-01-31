@@ -34,9 +34,12 @@ compare_mcdc_results() {
   # Debug: Show the modules being processed
   echo "Modules to be processed: $modules"
 
-  echo "Comparison of MCDC results between Main Branch and PR:" >> comparison_results.txt
+  echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
+  echo "" >> comparison_results.txt
   echo "Modules with changes:" >> comparison_results.txt
+  echo "" >> comparison_results.txt
   echo "Modules without changes:" >> comparison_results.txt
+  echo "" >> comparison_results.txt
   
   # Loop through all modules to compare each one
   for module in $modules; do
@@ -64,14 +67,15 @@ compare_mcdc_results() {
     # Check if there are any differences
     if [ "$total_files_diff" -eq 0 ] && [ "$no_condition_data_diff" -eq 0 ] && [ "$(echo "$condition_outcomes_diff == 0" | bc)" -eq 1 ]; then
       # No differences, output to "Modules without changes"
-      echo "Module: $module - No change" >> comparison_results.txt
+      echo -e "\tModule: $module - No change" >> comparison_results.txt
     else
       # There are differences, output the changes
+      echo -e "\tModule: $module" >> comparison_results.txt
       echo "Calculated differences for $module:" >> comparison_results.txt
       echo "  Total files processed difference: $total_files_diff" >> comparison_results.txt
       echo "  Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
       echo "  Condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
-      echo " " >> comparison_results.txt
+      echo "" >> comparison_results.txt
     fi
   done
 }
