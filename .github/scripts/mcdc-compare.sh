@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Script started"
-
 # Function to extract the relevant numbers from a module's "Summary for module" section
 extract_module_numbers() {
   file=$1
@@ -37,6 +35,8 @@ compare_mcdc_results() {
   echo "Modules to be processed: $modules"
 
   echo "Comparison of MCDC results between Main Branch and PR:" >> comparison_results.txt
+  echo "Modules with changes:" >> comparison_results.txt
+  echo "Modules without changes:" >> comparison_results.txt
   
   # Loop through all modules to compare each one
   for module in $modules; do
@@ -61,19 +61,18 @@ compare_mcdc_results() {
     # Calculate difference in condition outcomes
     condition_outcomes_diff=$(echo "$main_condition_covered - $pr_condition_covered" | bc)
 
-    # Display the calculated differences
-    echo "Calculated differences for $module:"
-    echo "  Total files processed difference: $total_files_diff"
-    echo "  Number of files with no condition data difference: $no_condition_data_diff"
-    echo "  Condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%"
-    echo " "
-
-    # Output the differences to the specified output file
-    echo "Module: $module" >> comparison_results.txt
-    echo "  Total files processed difference: $total_files_diff"  >> comparison_results.txt
-    echo "  Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
-    echo "  Condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
-    echo " "  >> comparison_results.txt
+    # Check if there are any differences
+    if [ "$total_files_diff" -eq 0 ] && [ "$no_condition_data_diff" -eq 0 ] && [ "$(echo "$condition_outcomes_diff == 0" | bc)" -eq 1 ]; then
+      # No differences, output to "Modules without changes"
+      echo "Module: $module - No change" >> comparison_results.txt
+    else
+      # There are differences, output the changes
+      echo "Calculated differences for $module:" >> comparison_results.txt
+      echo "  Total files processed difference: $total_files_diff" >> comparison_results.txt
+      echo "  Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
+      echo "  Condition outcomes covered difference: $(printf "%.2f" $condition_outcomes_diff)%" >> comparison_results.txt
+      echo " " >> comparison_results.txt
+    fi
   done
 }
 
