@@ -2,6 +2,15 @@
 
 echo "Script started"
 
+# Function to check if a file exists
+check_file_exists() {
+  file=$1
+  if [ ! -f "$file" ]; then
+    echo "Error: File '$file' does not exist."
+    exit 1
+  fi
+}
+
 # Function to extract the relevant numbers from a module's "Summary for module" section
 extract_module_numbers() {
   file=$1
@@ -39,6 +48,11 @@ compare_mcdc_results() {
   main_results_file=$1
   pr_results_file=$2
   modules_file=$3
+
+  # Check if the files exist before proceeding
+  check_file_exists "$main_results_file"
+  check_file_exists "$pr_results_file"
+  check_file_exists "$modules_file"
 
   # Read modules from modules.txt (passed as argument)
   modules=$(cat "$modules_file")
@@ -90,7 +104,7 @@ compare_mcdc_results() {
       echo "  Total files processed difference: $total_files_diff" >> comparison_results.txt
       echo "  Number of files with no condition data difference: $no_condition_data_diff" >> comparison_results.txt
       echo "  Condition outcomes covered difference: $condition_outcomes_covered_diff_percent%" >> comparison_results.txt
-      echo "  Number of conditions difference: $condition_outcomes_out_of_diff" >> comparison_results.txt
+      echo "  'Out of' value difference: $condition_outcomes_out_of_diff" >> comparison_results.txt
       echo "" >> comparison_results.txt
     else
       echo "  Module: $module - No change" >> comparison_results.txt
