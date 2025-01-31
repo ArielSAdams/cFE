@@ -2,12 +2,12 @@
 
 echo "Script started"
 
-# Function to check if a file exists
+# Function to check if a file exists and return an error message for missing files
 check_file_exists() {
   file=$1
   if [ ! -f "$file" ]; then
     echo "Error: File '$file' does not exist."
-    exit 1
+    missing_files=true
   fi
 }
 
@@ -49,10 +49,19 @@ compare_mcdc_results() {
   pr_results_file=$2
   modules_file=$3
 
+  # Initialize a flag to track if any files are missing
+  missing_files=false
+
   # Check if the files exist before proceeding
   check_file_exists "$main_results_file"
   check_file_exists "$pr_results_file"
   check_file_exists "$modules_file"
+
+  # If any files are missing, exit early
+  if [ "$missing_files" = true ]; then
+    echo "Error: One or more input files are missing. Exiting."
+    exit 1
+  fi
 
   # Read modules from modules.txt (passed as argument)
   modules=$(cat "$modules_file")
