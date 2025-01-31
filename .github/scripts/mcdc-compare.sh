@@ -64,12 +64,17 @@ compare_mcdc_results() {
     # Calculate difference in condition outcomes
     condition_outcomes_diff=$(echo "$main_condition_covered - $pr_condition_covered" | bc)
 
-    # Check if there are any differences
-    if [ "$total_files_diff" -eq 0 ] && [ "$no_condition_data_diff" -eq 0 ] && [ "$(echo "$condition_outcomes_diff == 0" | bc)" -eq 1 ]; then
+    # Convert 0.00% to 0 for easier comparison
+    if [ "$(echo "$condition_outcomes_diff == 0.00" | bc)" -eq 1 ]; then
+      condition_outcomes_diff=0
+    fi
+
+    # Check if there are any differences (if all differences are zero, skip from changes section)
+    if [ "$total_files_diff" -eq 0 ] && [ "$no_condition_data_diff" -eq 0 ] && [ "$condition_outcomes_diff" -eq 0 ]; then
       # No differences, output to "Modules without changes"
       echo -e "\tModule: $module - No change" >> comparison_results.txt
     else
-      # There are differences, output the changes
+      # There are differences, output the changes under "Modules with changes"
       echo -e "\tModule: $module" >> comparison_results.txt
       echo "Calculated differences for $module:" >> comparison_results.txt
       echo "  Total files processed difference: $total_files_diff" >> comparison_results.txt
