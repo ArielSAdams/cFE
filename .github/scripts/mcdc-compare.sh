@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Script started"
+
 # Function to extract the relevant numbers from a module's "Summary for module" section
 extract_module_numbers() {
   file=$1
@@ -8,10 +10,14 @@ extract_module_numbers() {
   # Extract the values for the specific module summary
   total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed: \K\d+')
   no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data: \K\d+')
-  
-  # Extract the condition outcomes covered and remove the '%' sign to ensure numeric calculations
+
+  # Extract the condition outcomes covered (before the '%' sign) and ignore extra text like 'of 292'
   condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered: \K[\d.]+(?=%)')
-  condition_outcomes_covered=${condition_outcomes_covered%\%}  # Remove the '%' symbol
+
+  # Handle empty values and set to 0 if missing
+  total_files_processed=${total_files_processed:-0}
+  no_condition_data=${no_condition_data:-0}
+  condition_outcomes_covered=${condition_outcomes_covered:-0}
 
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered"
 }
