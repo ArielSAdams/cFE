@@ -157,7 +157,7 @@ jobs:
       # Add step to reference new script that calculates difference between main artifact and pr artifact
       - name: Compare main and PR artifacts      
         run: |
-          bash .github/scripts/mcdc-compare.sh main-branch-results/mcdc_results.txt mcdc_results.txt dummy_modules.txt
+          bash .github/scripts/mcdc-compare.sh main-branch-results/dummy_mcdc_results.txt dummy_mcdc_results.txt dummy_modules.txt
 
       - name: Comment comparison to pull request
         uses: actions/github-script@v7
