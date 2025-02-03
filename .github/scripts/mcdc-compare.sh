@@ -28,11 +28,13 @@ extract_module_numbers() {
   # Extract condition outcomes covered "of" value (including 0)
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
 
-  # Return extracted values
+  # Return extracted values (ensure they are not empty)
+  if [[ -z "$total_files_processed" || -z "$no_condition_data" || -z "$condition_outcomes_covered" || -z "$condition_outcomes_out_of" ]]; then
+    echo "Error: Missing values for module '$module' in file '$file'"
+    return 1
+  fi
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_outcomes_out_of"
 }
-
-
 
 # Compare results for each module between two files
 compare_mcdc_results() {
@@ -80,10 +82,20 @@ compare_mcdc_results() {
     echo "Main results: Extracting numbers for module: $module from file: $main_results_file"
     echo "PR results: Extracting numbers for module: $module from file: $pr_results_file"
     
+    # Extract the values from both files
+    main_results=$(extract_module_numbers "$main_results_file" "$module")
+    pr_results=$(extract_module_numbers "$pr_results_file" "$module")
+
+    # Check if the extraction was successful
+    if [ $? -ne 0 ]; then
+      echo "Error extracting data for module '$module'. Skipping this module."
+      continue
+    fi
+
     # Read main results
-    read main_total_files main_no_condition main_condition_covered main_condition_out_of <<< $(extract_module_numbers "$main_results_file" "$module")
+    read main_total_files main_no_condition main_condition_covered main_condition_out_of <<< "$main_results"
     # Read PR results
-    read pr_total_files pr_no_condition pr_condition_covered pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
+    read pr_total_files pr_no_condition pr_condition_covered pr_condition_out_of <<< "$pr_results"
 
     # Debug: Show extracted values
     echo "Main results - Total files processed: $main_total_files, No condition data: $main_no_condition, Condition outcomes covered: $main_condition_covered% of $main_condition_out_of"
