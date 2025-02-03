@@ -59,6 +59,7 @@ compare_mcdc_results() {
   # Debug: Show the modules being processed
   echo "Modules to be processed: $modules"
 
+  # Initialize output file
   echo "MC/DC results compared against latest main branch results:" > comparison_results.txt
   echo "" >> comparison_results.txt
   echo "Modules with changes:" >> comparison_results.txt
@@ -134,9 +135,15 @@ compare_mcdc_results() {
     fi
   done
 
-  # Add modules without changes to the output
+  # Append modules without changes to the output
   for module in "${modules_without_changes[@]}"; do
     echo "  Module: $module - No change" >> comparison_results.txt
+  done
+
+  # Append the modules with changes under the appropriate section
+  echo "Modules with changes:" >> comparison_results.txt
+  for module in "${modules_with_changes[@]}"; do
+    echo "  Module: $module" >> comparison_results.txt
   done
 }
 
