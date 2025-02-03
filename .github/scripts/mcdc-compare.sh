@@ -85,11 +85,26 @@ compare_mcdc_results() {
     condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
     condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
 
-    # Check if there are differences
-    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
-      modules_with_changes="${modules_with_changes}Module: $module\n  Total files processed difference: $total_files_diff\n  Number of files with no condition data difference: $no_condition_data_diff\n  Condition outcomes covered difference: $condition_outcomes_covered_diff_percent%\n  'Out of' value difference: $condition_outcomes_out_of_diff\n\n"
+    # If there are changes, show only the differences
+    changes=""
+    if [ "$total_files_diff" -ne 0 ]; then
+      changes="${changes}  Total files processed difference: $total_files_diff\n"
+    fi
+    if [ "$no_condition_data_diff" -ne 0 ]; then
+      changes="${changes}  Number of files with no condition data difference: $no_condition_data_diff\n"
+    fi
+    if [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ]; then
+      changes="${changes}  Condition outcomes covered difference: $condition_outcomes_covered_diff_percent%\n"
+    fi
+    if [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
+      changes="${changes}  'Out of' value difference: $condition_outcomes_out_of_diff\n"
+    fi
+
+    # Check if there are any differences
+    if [ -n "$changes" ]; then
+      modules_with_changes="${modules_with_changes}Module: $module\n$changes\n"
     else
-      modules_without_changes="${modules_without_changes}  Module: $module - No change\n\n"
+      modules_without_changes="${modules_without_changes}  Module: $module\n\n"
     fi
   done
 
