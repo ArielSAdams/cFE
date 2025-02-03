@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Main Branch Script started"
+echo "Main Branch Script"
 
 # Function to check if a file exists and return an error message for missing files
 check_file_exists() {
@@ -16,11 +16,17 @@ extract_module_numbers() {
   file=$1
   module=$2
 
+  # Print the summary section for the module to show the data before extracting
+  echo "Extracting Summary for module: $module"
+  echo "Summary section from file '$file':"
+  sed -n "/^Summary for ${module}/,/^$/p" "$file"
+  echo ""  # Adding a newline for better readability
+  
   # Extract total files processed (including 0 case)
   total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed:\s*\K\d*')
 
   # Extract number of files with no condition data (should be an integer)
-  no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data:\s*\K\d+')
+  no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data:\s*\K\d*')
 
   # Extract condition outcomes covered percentage (with 0% included)
   condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:\s*\K[\d.]+(?=%)')
@@ -28,12 +34,10 @@ extract_module_numbers() {
   # Extract condition outcomes covered "of" value (including 0)
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
 
-  # Return extracted values
-  echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_outcomes_out_of"
 
+  echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_out_of"
+  
 }
-
-
 
 # Compare results for each module between two files
 compare_mcdc_results() {
@@ -81,10 +85,20 @@ compare_mcdc_results() {
     echo "Main results: Extracting numbers for module: $module from file: $main_results_file"
     echo "PR results: Extracting numbers for module: $module from file: $pr_results_file"
     
+    # Extract the values from both files
+    main_results=$(extract_module_numbers "$main_results_file" "$module")
+    pr_results=$(extract_module_numbers "$pr_results_file" "$module")
+
+    # Check if the extraction was successful
+    if [ $? -ne 0 ]; then
+      echo "Error extracting data for module '$module'. Skipping this module."
+      continue
+    fi
+
     # Read main results
-    read main_total_files main_no_condition main_condition_covered main_condition_out_of <<< $(extract_module_numbers "$main_results_file" "$module")
+    read main_total_files main_no_condition main_condition_covered main_condition_out_of <<< "$main_results"
     # Read PR results
-    read pr_total_files pr_no_condition pr_condition_covered pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
+    read pr_total_files pr_no_condition pr_condition_covered pr_condition_out_of <<< "$pr_results"
 
     # Debug: Show extracted values
     echo "Main results - Total files processed: $main_total_files, No condition data: $main_no_condition, Condition outcomes covered: $main_condition_covered% of $main_condition_out_of"
