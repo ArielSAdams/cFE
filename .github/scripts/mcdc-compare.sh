@@ -16,21 +16,17 @@ extract_module_numbers() {
   file=$1
   module=$2
 
-  # Extract the values for the specific module summary
+  # Extract total files processed
   total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed: *\K\d*')
+
+  # Extract number of files with no condition data
   no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data: *\K\d*')
 
-  # Extract the condition outcomes covered percentage and the "out of" value (if present)
+  # Extract condition outcomes covered percentage and "out of" value
   condition_outcomes_covered_percent=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered: *\K[\d.]+(?=%)')
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered: *[\d.]+% of *\K\d*')
 
-  # Handle cases where condition outcomes covered may be '0% of 0' (or similar edge cases)
-  condition_outcomes_covered_percent=${condition_outcomes_covered_percent:-0}
-  condition_outcomes_out_of=${condition_outcomes_out_of:-0}
-  total_files_processed=${total_files_processed:-0}
-  no_condition_data=${no_condition_data:-0}
-
-  # Output the results
+  # Return extracted values (could be empty or null if not found)
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered_percent $condition_outcomes_out_of"
 }
 
@@ -94,11 +90,20 @@ compare_mcdc_results() {
     no_condition_data_diff=$((main_no_condition - pr_no_condition))
 
     # Calculate difference in condition outcomes
-    condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
-    condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
+    if [ ! -z "$main_condition_covered_percent" ] && [ ! -z "$pr_condition_covered_percent" ]; then
+      condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
+    else
+      condition_outcomes_covered_diff_percent="N/A"
+    fi
+
+    if [ ! -z "$main_condition_out_of" ] && [ ! -z "$pr_condition_out_of" ]; then
+      condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
+    else
+      condition_outcomes_out_of_diff="N/A"
+    fi
 
     # Determine if there are differences and print the appropriate output
-    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
+    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$condition_outcomes_covered_diff_percent" != "N/A" ] || [ "$condition_outcomes_out_of_diff" != "N/A" ]; then
       echo "Module: $module" >> comparison_results.txt
       echo "Calculated differences for $module:" >> comparison_results.txt
       echo "  Total files processed difference: $total_files_diff" >> comparison_results.txt
