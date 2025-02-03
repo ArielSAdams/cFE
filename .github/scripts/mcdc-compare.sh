@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Main Branch Script"
+echo "Main Branch Script started"
 
 # Function to check if a file exists and return an error message for missing files
 check_file_exists() {
@@ -18,25 +18,32 @@ extract_module_numbers() {
 
   # Print the summary section for the module to show the data before extracting
   echo "Extracting Summary for module: $module"
-  echo "Summary section from file '$file':"
-  sed -n "/^Summary for ${module}/,/^$/p" "$file"
+  summary_section=$(sed -n "/^Summary for ${module}/,/^$/p" "$file")
+  
+  if [ -z "$summary_section" ]; then
+    echo "Warning: No summary section found for module '$module'. Skipping."
+    return 1  # Return with error if the section is empty
+  fi
+  
+  # Output the summary section so we can see the raw data
+  echo "Summary section for '$module':"
+  echo "$summary_section"
   echo ""  # Adding a newline for better readability
   
   # Extract total files processed (including 0 case)
-  total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed:\s*\K\d*')
+  total_files_processed=$(echo "$summary_section" | grep -Po 'Total files processed:\s*\K\d*')
 
   # Extract number of files with no condition data (should be an integer)
-  no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data:\s*\K\d*')
+  no_condition_data=$(echo "$summary_section" | grep -Po 'Number of files with no condition data:\s*\K\d*')
 
   # Extract condition outcomes covered percentage (with 0% included)
-  condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:\s*\K[\d.]+(?=%)')
+  condition_outcomes_covered=$(echo "$summary_section" | grep -Po 'Condition outcomes covered:\s*\K[\d.]+(?=%)')
 
   # Extract condition outcomes covered "of" value (including 0)
-  condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
+  condition_outcomes_out_of=$(echo "$summary_section" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
 
   # Return extracted values
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_out_of"
-  
 }
 
 # Compare results for each module between two files
@@ -89,7 +96,7 @@ compare_mcdc_results() {
     main_results=$(extract_module_numbers "$main_results_file" "$module")
     pr_results=$(extract_module_numbers "$pr_results_file" "$module")
 
-    # Check if the extraction was successful
+    # Skip the module if no valid data was extracted
     if [ $? -ne 0 ]; then
       echo "Error extracting data for module '$module'. Skipping this module."
       continue
