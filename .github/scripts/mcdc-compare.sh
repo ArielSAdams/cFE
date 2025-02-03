@@ -16,8 +16,6 @@ extract_module_numbers() {
   file=$1
   module=$2
 
-  sed -n '/^Summary for ${module} module:/,/^Processing /p' "$file"
-
   # Extract the values for the specific module summary
   total_files_processed=$(sed -n '/^Summary for ${module} module:/,/^Processing /p' "$file" | grep -Po 'Total files processed:\s*\K\d*')
   no_condition_data=$(sed -n '/^Summary for ${module} module:/,/^Processing /p' "$file" | grep -Po 'Number of files with no condition data:\s*\K\d+')
