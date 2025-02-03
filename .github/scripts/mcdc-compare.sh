@@ -25,7 +25,6 @@ extract_module_numbers() {
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module} module/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*' | head -n 1)
 
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered_percent $condition_outcomes_out_of"
-  
 }
 
 # Compare results for each module between two files
@@ -66,7 +65,7 @@ compare_mcdc_results() {
   echo "" >> comparison_results.txt
   echo "Modules without changes:" >> comparison_results.txt
   echo "" >> comparison_results.txt
-  
+
   # Loop through all modules to compare each one
   for module in $modules; do
     # Extract numbers for the main results file and PR results file for the current module
@@ -91,42 +90,40 @@ compare_mcdc_results() {
     condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
     condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
 
-    # Check if there are any changes
+    # Output changes for modules with differences
     if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
-      echo "Module: $module" >> comparison_results.txt
-      echo "Changes detected for $module:" >> comparison_results.txt
-
-      # Files processed difference
+      echo "  $module" >> comparison_results.txt
+      
       if [ "$total_files_diff" -gt 0 ]; then
-        echo "  Number of additional files processed: $total_files_diff" >> comparison_results.txt
+        echo "    Number of additional files processed: $total_files_diff" >> comparison_results.txt
       elif [ "$total_files_diff" -lt 0 ]; then
-        echo "  Number of fewer files processed: $((total_files_diff * -1))" >> comparison_results.txt
+        echo "    Number of files removed: ${total_files_diff#-}" >> comparison_results.txt
       fi
 
-      # Files with no condition data difference
       if [ "$no_condition_data_diff" -gt 0 ]; then
-        echo "  Number of additional files with no condition data: $no_condition_data_diff" >> comparison_results.txt
+        echo "    Number of additional files with no condition data: $no_condition_data_diff" >> comparison_results.txt
       elif [ "$no_condition_data_diff" -lt 0 ]; then
-        echo "  Number of fewer files with no condition data: $((no_condition_data_diff * -1))" >> comparison_results.txt
+        echo "    Number of files with no condition data removed: ${no_condition_data_diff#-}" >> comparison_results.txt
       fi
 
-      # Condition coverage difference
       if [ "$(echo "$condition_outcomes_covered_diff_percent > 0" | bc)" -eq 1 ]; then
-        echo "  Percentage increase in condition coverage: $condition_outcomes_covered_diff_percent%" >> comparison_results.txt
+        echo "    Percentage increase in condition coverage: $condition_outcomes_covered_diff_percent%" >> comparison_results.txt
       elif [ "$(echo "$condition_outcomes_covered_diff_percent < 0" | bc)" -eq 1 ]; then
-        echo "  Percentage decrease in condition coverage: $condition_outcomes_covered_diff_percent%" >> comparison_results.txt
+        echo "    Percentage of condition coverage removed: ${condition_outcomes_covered_diff_percent#-}%" >> comparison_results.txt
       fi
 
-      # Conditions covered difference
       if [ "$condition_outcomes_out_of_diff" -gt 0 ]; then
-        echo "  Number of additional conditions covered: $condition_outcomes_out_of_diff" >> comparison_results.txt
+        echo "    Number of additional conditions covered: $condition_outcomes_out_of_diff" >> comparison_results.txt
       elif [ "$condition_outcomes_out_of_diff" -lt 0 ]; then
-        echo "  Number of fewer conditions covered: $((condition_outcomes_out_of_diff * -1))" >> comparison_results.txt
+        echo "    Number of conditions removed: ${condition_outcomes_out_of_diff#-}" >> comparison_results.txt
       fi
 
       echo "" >> comparison_results.txt
-    else
-      echo "  Module: $module - No change" >> comparison_results.txt
+    fi
+
+    # Output for modules without changes
+    if [ "$total_files_diff" -eq 0 ] && [ "$no_condition_data_diff" -eq 0 ] && [ "$(echo "$condition_outcomes_covered_diff_percent == 0" | bc)" -eq 1 ] && [ "$condition_outcomes_out_of_diff" -eq 0 ]; then
+      echo "  $module" >> comparison_results.txt
       echo "" >> comparison_results.txt
     fi
   done
