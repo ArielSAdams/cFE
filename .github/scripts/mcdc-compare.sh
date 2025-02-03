@@ -27,7 +27,6 @@ extract_module_numbers() {
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of *\K\d+')
 
   # Handle missing values (default to "N/A" if not found)
-  # REMOVE AFTER DEBUG
   if [ -z "$total_files_processed" ]; then
     total_files_processed="N/A"
   fi
@@ -42,7 +41,7 @@ extract_module_numbers() {
   fi
   
   # Return extracted values (could be empty or null if not found)
-  echo "$total_files_processed $no_condition_data $condition_outcomes_covered_percent $condition_outcomes_out_of"
+  echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_outcomes_out_of"
 }
 
 # Compare results for each module between two files
@@ -92,26 +91,26 @@ compare_mcdc_results() {
     echo "PR results: Extracting numbers for module: $module from file: $pr_results_file"
     
     # Read main results
-    read main_total_files main_no_condition main_condition_covered_percent main_condition_out_of <<< $(extract_module_numbers "$main_results_file" "$module")
+    read main_total_files main_no_condition main_condition_covered main_condition_out_of <<< $(extract_module_numbers "$main_results_file" "$module")
     # Read PR results
-    read pr_total_files pr_no_condition pr_condition_covered_percent pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
+    read pr_total_files pr_no_condition pr_condition_covered pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
 
     # Debug: Show extracted values
-    echo "Main results - Total files processed: $main_total_files, No condition data: $main_no_condition, Condition outcomes covered: $main_condition_covered_percent% of $main_condition_out_of"
-    echo "PR results - Total files processed: $pr_total_files, No condition data: $pr_no_condition, Condition outcomes covered: $pr_condition_covered_percent% of $pr_condition_out_of"
+    echo "Main results - Total files processed: $main_total_files, No condition data: $main_no_condition, Condition outcomes covered: $main_condition_covered% of $main_condition_out_of"
+    echo "PR results - Total files processed: $pr_total_files, No condition data: $pr_no_condition, Condition outcomes covered: $pr_condition_covered% of $pr_condition_out_of"
 
     # Calculate differences for each module
     total_files_diff=$((main_total_files - pr_total_files))
     no_condition_data_diff=$((main_no_condition - pr_no_condition))
 
     # Calculate difference in condition outcomes
-    if [ ! -z "$main_condition_covered_percent" ] && [ ! -z "$pr_condition_covered_percent" ]; then
-      condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
+    if [ "$main_condition_covered" != "N/A" ] && [ "$pr_condition_covered" != "N/A" ]; then
+      condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered - $pr_condition_covered" | bc)
     else
       condition_outcomes_covered_diff_percent="N/A"
     fi
 
-    if [ ! -z "$main_condition_out_of" ] && [ ! -z "$pr_condition_out_of" ]; then
+    if [ "$main_condition_out_of" != "N/A" ] && [ "$pr_condition_out_of" != "N/A" ]; then
       condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
     else
       condition_outcomes_out_of_diff="N/A"
