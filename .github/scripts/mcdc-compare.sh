@@ -26,13 +26,30 @@ extract_module_numbers() {
   condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:\s*\K[\d.]+(?=%)')
 
   # Extract condition outcomes covered "of" value (including 0)
-  condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\d*')
+  condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
 
-  # Return extracted values (ensure they are not empty)
-  if [[ -z "$total_files_processed" || -z "$no_condition_data" || -z "$condition_outcomes_covered" || -z "$condition_outcomes_out_of" ]]; then
-    echo "Error: Missing values for module '$module' in file '$file'"
-    return 1
+  # Check for missing values
+  if [[ -z "$total_files_processed" ]]; then
+    echo "Error: Missing 'Total files processed' for module '$module' in file '$file'"
+    total_files_processed="0"  # Default to 0 if missing
   fi
+
+  if [[ -z "$no_condition_data" ]]; then
+    echo "Error: Missing 'Number of files with no condition data' for module '$module' in file '$file'"
+    no_condition_data="0"  # Default to 0 if missing
+  fi
+
+  if [[ -z "$condition_outcomes_covered" ]]; then
+    echo "Error: Missing 'Condition outcomes covered' for module '$module' in file '$file'"
+    condition_outcomes_covered="0.0"  # Default to 0.0 if missing
+  fi
+
+  if [[ -z "$condition_outcomes_out_of" ]]; then
+    echo "Error: Missing 'Condition outcomes covered: of' value for module '$module' in file '$file'"
+    condition_outcomes_out_of="0"  # Default to 0 if missing
+  fi
+
+  # Return extracted values
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_outcomes_out_of"
 }
 
