@@ -66,6 +66,10 @@ compare_mcdc_results() {
   echo "Modules without changes:" >> comparison_results.txt
   echo "" >> comparison_results.txt
 
+  # Arrays to keep track of modules with and without changes
+  modules_with_changes=()
+  modules_without_changes=()
+
   # Loop through all modules to compare each one
   for module in $modules; do
     # Extract numbers for the main results file and PR results file for the current module
@@ -90,53 +94,49 @@ compare_mcdc_results() {
     condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
     condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
 
-    # Initialize a flag to check if there are any changes for this module
-    changes_detected=false
-
-    # Check if there are any differences and prepare the output for "Modules with changes"
-    if [ "$total_files_diff" -ne 0 ]; then
+    # Determine if there are differences and print the appropriate output
+    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
+      # Add module to "modules with changes" list
+      modules_with_changes+=("$module")
       echo "  Module: $module" >> comparison_results.txt
-      if [ "$total_files_diff" -gt 0 ]; then
-        echo "    Number of removed files: $total_files_diff" >> comparison_results.txt
-      else
-        echo "    Number of added files: ${total_files_diff#-}" >> comparison_results.txt
-      fi
-      changes_detected=true
-    fi
 
-    if [ "$no_condition_data_diff" -ne 0 ]; then
-      if [ "$no_condition_data_diff" -gt 0 ]; then
-        echo "    Number of removed files with no condition data: $no_condition_data_diff" >> comparison_results.txt
-      else
-        echo "    Number of added files with no condition data: ${no_condition_data_diff#-}" >> comparison_results.txt
+      # Handle the differences and print appropriate messages for positive and negative values
+      if [ "$total_files_diff" -lt 0 ]; then
+        echo "    Number of added files: $total_files_diff" >> comparison_results.txt
+      elif [ "$total_files_diff" -gt 0 ]; then
+        echo "    Number of removed files: ${total_files_diff#-}" >> comparison_results.txt
       fi
-      changes_detected=true
-    fi
 
-    if [ "$(echo "$condition_outcomes_covered_diff_percent" | bc)" != "0" ]; then
-      if [ "$(echo "$condition_outcomes_covered_diff_percent" | bc)" -gt 0 ]; then
-        echo "    Number of removed conditions covered: $condition_outcomes_covered_diff_percent%" >> comparison_results.txt
-      else
-        echo "    Number of added conditions covered: ${condition_outcomes_covered_diff_percent#-}%" >> comparison_results.txt
+      if [ "$no_condition_data_diff" -lt 0 ]; then
+        echo "    Number of added files with no condition data: $no_condition_data_diff" >> comparison_results.txt
+      elif [ "$no_condition_data_diff" -gt 0 ]; then
+        echo "    Number of removed files with no condition data: ${no_condition_data_diff#-}" >> comparison_results.txt
       fi
-      changes_detected=true
-    fi
 
-    if [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
-      if [ "$condition_outcomes_out_of_diff" -gt 0 ]; then
-        echo "    Number of removed conditions 'out of': $condition_outcomes_out_of_diff" >> comparison_results.txt
-      else
-        echo "    Number of added conditions 'out of': ${condition_outcomes_out_of_diff#-}" >> comparison_results.txt
+      if [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ]; then
+        if [ "$(echo "$condition_outcomes_covered_diff_percent > 0" | bc)" -eq 1 ]; then
+          echo "    Percentage decrease in condition coverage: $condition_outcomes_covered_diff_percent%" >> comparison_results.txt
+        else
+          echo "    Percentage increase in condition coverage: ${condition_outcomes_covered_diff_percent#-}%" >> comparison_results.txt
+        fi
       fi
-      changes_detected=true
-    fi
 
-    # If changes were detected for the module, add it to the "Modules with changes"
-    if [ "$changes_detected" = true ]; then
+      if [ "$condition_outcomes_out_of_diff" -lt 0 ]; then
+        echo "    Number of added conditions 'out of': $condition_outcomes_out_of_diff" >> comparison_results.txt
+      elif [ "$condition_outcomes_out_of_diff" -gt 0 ]; then
+        echo "    Number of removed conditions 'out of': ${condition_outcomes_out_of_diff#-}" >> comparison_results.txt
+      fi
+
       echo "" >> comparison_results.txt
     else
-      echo "  Module: $module - No change" >> comparison_results.txt
+      # Add module to "modules without changes" list
+      modules_without_changes+=("$module")
     fi
+  done
+
+  # Add modules without changes to the output
+  for module in "${modules_without_changes[@]}"; do
+    echo "  Module: $module - No change" >> comparison_results.txt
   done
 }
 
