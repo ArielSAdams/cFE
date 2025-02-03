@@ -88,23 +88,23 @@ compare_mcdc_results() {
     # If there are changes, show only the differences
     changes=""
     if [ "$total_files_diff" -ne 0 ]; then
-      changes="${changes}  Total files processed difference: $total_files_diff\n"
+      changes="${changes}    Total files processed difference: $total_files_diff\n"
     fi
     if [ "$no_condition_data_diff" -ne 0 ]; then
-      changes="${changes}  Number of files with no condition data difference: $no_condition_data_diff\n"
+      changes="${changes}    Number of files with no condition data difference: $no_condition_data_diff\n"
     fi
     if [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ]; then
-      changes="${changes}  Condition outcomes covered difference: $condition_outcomes_covered_diff_percent%\n"
+      changes="${changes}    Condition outcomes covered difference: $condition_outcomes_covered_diff_percent%\n"
     fi
     if [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
-      changes="${changes}  'Out of' value difference: $condition_outcomes_out_of_diff\n"
+      changes="${changes}    'Out of' value difference: $condition_outcomes_out_of_diff\n"
     fi
 
     # Check if there are any differences
     if [ -n "$changes" ]; then
-      modules_with_changes="${modules_with_changes}Module: $module\n$changes\n"
+      modules_with_changes="${modules_with_changes}  Module: $module\n$changes\n"
     else
-      modules_without_changes="${modules_without_changes}  Module: $module\n\n"
+      modules_without_changes="${modules_without_changes}  Module: $module - No change\n\n"
     fi
   done
 
