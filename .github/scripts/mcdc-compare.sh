@@ -16,33 +16,22 @@ extract_module_numbers() {
   file=$1
   module=$2
 
-  # Extract total files processed
-  total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed:\s*\K\d+')
+  # Extract total files processed (including 0 case)
+  total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed:\s*\K\d*')
 
-  # Extract number of files with no condition data
+  # Extract number of files with no condition data (should be an integer)
   no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data:\s*\K\d+')
 
-  # Extract condition outcomes covered percentage and its corresponding "of" value (e.g., '98.65% of 74')
+  # Extract condition outcomes covered percentage (with 0% included)
   condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:\s*\K[\d.]+(?=%)')
-  condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d+')
 
-  # Handle missing values (default to "N/A" if not found)
-  if [ -z "$total_files_processed" ]; then
-    total_files_processed="N/A"
-  fi
-  if [ -z "$no_condition_data" ]; then
-    no_condition_data="N/A"
-  fi
-  if [ -z "$condition_outcomes_covered" ]; then
-    condition_outcomes_covered="N/A"
-  fi
-  if [ -z "$condition_outcomes_out_of" ]; then
-    condition_outcomes_out_of="N/A"
-  fi
+  # Extract condition outcomes covered "of" value (including 0)
+  condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
 
   # Return extracted values
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_outcomes_out_of"
 }
+
 
 
 # Compare results for each module between two files
