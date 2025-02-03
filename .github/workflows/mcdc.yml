@@ -50,6 +50,7 @@ jobs:
         uses: actions/checkout@v4        
         with:
           path: cfe
+          ref: test-mcdc-missing-pr-file
         
       - name: Modify osal to include coverage flags
         run: |
