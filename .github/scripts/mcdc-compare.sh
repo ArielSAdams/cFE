@@ -139,11 +139,6 @@ compare_mcdc_results() {
   for module in "${modules_without_changes[@]}"; do
     echo "  Module: $module - No change" >> comparison_results.txt
   done
-
-  # Append the modules with changes under the appropriate section, without repeating the section title
-  for module in "${modules_with_changes[@]}"; do
-    echo "  Module: $module" >> comparison_results.txt
-  done
 }
 
 # Check the script arguments
