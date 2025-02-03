@@ -15,14 +15,14 @@ check_file_exists() {
 extract_module_numbers() {
   file=$1
   module=$2
-  
-  # Extract total files processed (this regex should match numbers following the label)
+
+  # Extract total files processed
   total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed:\s*\K\d+')
 
   # Extract number of files with no condition data
   no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data:\s*\K\d+')
 
-  # Extract condition outcomes covered percentage and "out of" value
+  # Extract condition outcomes covered percentage and its corresponding "of" value (e.g., '98.65% of 74')
   condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:\s*\K[\d.]+(?=%)')
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d+')
 
@@ -39,10 +39,11 @@ extract_module_numbers() {
   if [ -z "$condition_outcomes_out_of" ]; then
     condition_outcomes_out_of="N/A"
   fi
-  
+
   # Return extracted values
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_outcomes_out_of"
 }
+
 
 # Compare results for each module between two files
 compare_mcdc_results() {
