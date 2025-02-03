@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Main Branch Script started"
+echo "Main Branch Script"
 
 # Function to check if a file exists and return an error message for missing files
 check_file_exists() {
@@ -16,10 +16,11 @@ extract_module_numbers() {
   file=$1
   module=$2
 
-  # Debug: Show raw data for module
-  echo "Raw data for module '$module':"
+  # Print the summary section for the module to show the data before extracting
+  echo "Extracting Summary for module: $module"
+  echo "Summary section from file '$file':"
   sed -n "/^Summary for ${module}/,/^$/p" "$file"
-  echo ""
+  echo ""  # Adding a newline for better readability
   
   # Extract total files processed (including 0 case)
   total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed:\s*\K\d*')
@@ -34,7 +35,8 @@ extract_module_numbers() {
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
 
   # Return extracted values
-  echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_outcomes_out_of"
+  echo "$total_files_processed $no_condition_data $condition_outcomes_covered $condition_out_of"
+  
 }
 
 # Compare results for each module between two files
