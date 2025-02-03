@@ -16,16 +16,16 @@ extract_module_numbers() {
   file=$1
   module=$2
   
-  # Extract total files processed
+ # Extract total files processed
   total_files_processed=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Total files processed: *\K\d+')
-  
+
   # Extract number of files with no condition data
   no_condition_data=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Number of files with no condition data: *\K\d+')
-  
+
   # Extract condition outcomes covered percentage and "out of" value
-  condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered: *\K.*')
-  condition_outcomes_covered_percent=$(echo "$condition_outcomes_covered" | grep -Po '^[\d.]+')
-  condition_outcomes_out_of=$(echo "$condition_outcomes_covered" | grep -Po 'of *\K\d+')
+  condition_outcomes_covered=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'Condition outcomes covered: *\K[\d.]+')
+  condition_outcomes_out_of=$(sed -n "/^Summary for ${module}/,/^$/p" "$file" | grep -Po 'of *\K\d+')
+
 
   # Return extracted values (could be empty or null if not found)
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered_percent $condition_outcomes_out_of"
