@@ -99,6 +99,8 @@ compare_mcdc_results() {
     if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
       # Add module to "modules with changes" list
       modules_with_changes+=("$module")
+
+      # Append module name under "Modules with changes"
       echo "  Module: $module" >> comparison_results.txt
 
       # Handle the differences and print appropriate messages for positive and negative values
@@ -133,6 +135,11 @@ compare_mcdc_results() {
       # Add module to "modules without changes" list
       modules_without_changes+=("$module")
     fi
+  done
+
+  # Loop through modules_with_changes to append them to the "Modules with changes" section
+  for module in "${modules_with_changes[@]}"; do
+    echo "  Module: $module" >> comparison_results.txt
   done
 
   # Append modules without changes to the output
