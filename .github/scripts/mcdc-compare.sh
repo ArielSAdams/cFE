@@ -114,12 +114,6 @@ compare_mcdc_results() {
         changes="$changes\n    Number of removed conditions 'out of': ${condition_outcomes_out_of_diff#-}"
       fi
     fi
-
-    # If there were any changes, append the module to modules_with_changes and its changes to the output
-    if [ -n "$changes" ]; then
-      modules_with_changes+=("$module")
-      echo -e "  Module: $module" >> comparison_results.txt
-      echo -e "$changes" >> comparison_results.txt
     else
       modules_without_changes+=("$module")
     fi
@@ -134,6 +128,7 @@ compare_mcdc_results() {
   echo "" >> comparison_results.txt
   for module in "${modules_with_changes[@]}"; do
     echo "  Module: $module" >> comparison_results.txt
+    echo -e "$changes" >> comparison_results.txt
   done
 
   # Output Modules without changes
