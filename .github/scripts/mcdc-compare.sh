@@ -78,21 +78,22 @@ compare_mcdc_results() {
     read main_total_files main_no_condition main_condition_covered_percent main_condition_out_of <<< $(extract_module_numbers "$main_results_file" "$module")
     # Read PR results
     read pr_total_files pr_no_condition pr_condition_covered_percent pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
-
+  
     # Debug: Show extracted values
     echo "Main results - Total files processed: $main_total_files, No condition data: $main_no_condition, Condition outcomes covered: $main_condition_covered_percent% of $main_condition_out_of"
     echo "PR results - Total files processed: $pr_total_files, No condition data: $pr_no_condition, Condition outcomes covered: $pr_condition_covered_percent% of $pr_condition_out_of"
-
+  
     # Calculate differences for each module
     total_files_diff=$((main_total_files - pr_total_files))
     no_condition_data_diff=$((main_no_condition - pr_no_condition))
-
+  
     # Calculate difference in condition outcomes
     condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
     condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
-
-    # Determine if there are differences and print the appropriate output
+  
+    # Determine if there are any differences
     if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
+      # If there are differences, append to the "Modules with changes" section
       echo "Module: $module" >> comparison_results.txt
       echo "Calculated differences for $module:" >> comparison_results.txt
       echo "  Total files processed difference: $total_files_diff" >> comparison_results.txt
@@ -101,10 +102,20 @@ compare_mcdc_results() {
       echo "  'Out of' value difference: $condition_outcomes_out_of_diff" >> comparison_results.txt
       echo "" >> comparison_results.txt
     else
-      echo "  Module: $module - No change" >> comparison_results.txt
+      # If no differences, append to the "Modules without changes" section
+      echo "  Module: $module" >> comparison_results.txt
       echo "" >> comparison_results.txt
     fi
   done
+  
+  # Output the sections at the end
+  echo "Modules with changes:" >> comparison_results.txt
+  cat comparison_results.txt | grep -A 1000 "Module:.*Calculated differences" >> comparison_results.txt
+  echo "" >> comparison_results.txt
+  
+  echo "Modules without changes:" >> comparison_results.txt
+  cat comparison_results.txt | grep -A 1000 "Module:.*No change" >> comparison_results.txt
+
 }
 
 # Check the script arguments
