@@ -1458,7 +1458,7 @@ Creating 'cfe_msg_init.c.gcov'
 
 Lines executed:100.00% of 9
 Summary for coverage-msg-ALL module:
-  Total files processed: 
+  Total files processed:
   Number of files with no condition data: 2
   Condition outcomes covered: 95.89% of 292
  
