@@ -74,39 +74,8 @@ compare_mcdc_results() {
   for module in $modules; do
     # Extract numbers for the main results file and PR results file for the current module
     read main_total_files main_no_condition main_condition_covered_percent main_condition_out_of <<< $(extract_module_numbers "$main_results_file" "$module")
-    if [ $? -eq 1 ]; then
-      echo "Warning: Missing data in main branch for module '$module'."
-      if [ -z "$main_total_files" ]; then
-        echo "  - Missing Total files processed in main branch."
-      fi
-      if [ -z "$main_no_condition" ]; then
-        echo "  - Missing Number of files with no condition data in main branch."
-      fi
-      if [ -z "$main_condition_covered_percent" ]; then
-        echo "  - Missing Condition outcomes covered percentage in main branch."
-      fi
-      if [ -z "$main_condition_out_of" ]; then
-        echo "  - Missing Out of value in main branch."
-      fi
-    fi
 
     read pr_total_files pr_no_condition pr_condition_covered_percent pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
-
-    if [ $? -eq 1 ]; then
-      echo "Warning: Missing data in PR branch for module '$module'."
-      if [ -z "$pr_total_files" ]; then
-        echo "  - Missing Total files processed in PR branch."
-      fi
-      if [ -z "$pr_no_condition" ]; then
-        echo "  - Missing Number of files with no condition data in PR branch."
-      fi
-      if [ -z "$pr_condition_covered_percent" ]; then
-        echo "  - Missing Condition outcomes covered percentage in PR branch."
-      fi
-      if [ -z "$pr_condition_out_of" ]; then
-        echo "  - Missing Out of value in PR branch."
-      fi
-    fi
 
     # Initialize variables to store differences
     total_files_diff=""
@@ -202,6 +171,7 @@ compare_mcdc_results() {
   # Echo results 
   echo "Comparison of MCDC results between Main Branch and PR:"
   echo ""
+  echo " "
   echo "Modules with changes:" 
   echo -e "$modules_with_changes" 
   echo "Modules without changes:" 
