@@ -94,6 +94,7 @@ compare_mcdc_results() {
     fi
 
     read pr_total_files pr_no_condition pr_condition_covered_percent pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
+
     if [ $? -eq 1 ]; then
       echo "Warning: Missing data in PR branch for module '$module'."
       if [ -z "$pr_total_files" ]; then
@@ -168,22 +169,27 @@ compare_mcdc_results() {
     changes=""
 
     if [ -n "$total_files_diff" ]; then
+
       if [ "$total_files_diff" -gt 0 ]; then
         changes="${changes}    Number of processed files removed by PR: $total_files_diff\n"
       elif [ "$total_files_diff" -lt 0 ]; then
         changes="${changes}    Number of processed files added by PR: $(abs $total_files_diff)\n"
       fi
+
     fi
 
     if [ -n "$no_condition_data_diff" ]; then
+
       if [ "$no_condition_data_diff" -gt 0 ]; then
         changes="${changes}    Number of files with no condition data removed by PR: $no_condition_data_diff\n"
       elif [ "$no_condition_data_diff" -lt 0 ]; then
         changes="${changes}    Number of files with no condition data added by PR: $(abs $no_condition_data_diff)\n"
       fi
+
     fi
 
     if [ -n "$condition_outcomes_covered_diff_percent" ]; then
+
       if [ $(echo "$condition_outcomes_covered_diff_percent > 0" | bc) -eq 1 ]; then
         changes="${changes}    Percentage of covered conditions reduced by PR: $condition_outcomes_covered_diff_percent%\n"
       elif [ $(echo "$condition_outcomes_covered_diff_percent < 0" | bc) -eq 1 ]; then
@@ -199,7 +205,9 @@ compare_mcdc_results() {
       fi
     fi
 
+
     if [ -n "$changes" ]; then
+
       modules_with_changes="${modules_with_changes}  $module\n$changes\n"
     else
       modules_without_changes="${modules_without_changes}  $module\n"
