@@ -112,9 +112,9 @@ compare_mcdc_results() {
 
       # Determine if the percentage increased or decreased (keep the sign)
       if [ $(echo "$condition_outcomes_covered_diff_percent > 0" | bc) -eq 1 ]; then
-        changes="${changes}    Percentage of covered conditions reduced by PR: $condition_outcomes_covered_diff_percent%\n"
+        changes="${changes}    Percentage of covered conditions reduced by PR: $(abs $condition_outcomes_covered_diff_percent)%\n"
       elif [ $(echo "$condition_outcomes_covered_diff_percent < 0" | bc) -eq 1 ]; then
-        changes="${changes}    Percentage of covered conditions increased by PR: $condition_outcomes_covered_diff_percent%\n"
+        changes="${changes}    Percentage of covered conditions increased by PR: $(abs $condition_outcomes_covered_diff_percent)%\n"
       fi
     
       # Check for condition_outcomes_out_of_diff
