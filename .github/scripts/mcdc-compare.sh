@@ -92,15 +92,8 @@ compare_mcdc_results() {
     echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent%"
     echo "  Out of value difference: $(abs $condition_outcomes_out_of_diff)"
 
-    # Determine if the percentage increased or decreased (keep the sign)
-    if [ $(echo "$condition_outcomes_covered_diff_percent > 0" | bc) -eq 1 ]; then
-      echo "    Percentage of covered conditions reduced by PR: $condition_outcomes_covered_diff_percent%"
-    elif [ $(echo "$condition_outcomes_covered_diff_percent < 0" | bc) -eq 1 ]; then
-      echo "    Percentage of covered conditions increased by PR: $condition_outcomes_covered_diff_percent%"
-    fi
-
     # Check for other differences (not applying abs here)
-    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
+    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$condition_outcomes_covered_diff_percent" -ne 0 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
       changes=""
 
       # Check for total_files_diff
@@ -117,6 +110,13 @@ compare_mcdc_results() {
         changes="${changes}    Number of files with no condition data added by PR: $(abs $no_condition_data_diff)\n"
       fi
 
+      # Determine if the percentage increased or decreased (keep the sign)
+      if [ $(echo "$condition_outcomes_covered_diff_percent > 0" | bc) -eq 1 ]; then
+        changes="${changes}    Percentage of covered conditions reduced by PR: $condition_outcomes_covered_diff_percent%\n"
+      elif [ $(echo "$condition_outcomes_covered_diff_percent < 0" | bc) -eq 1 ]; then
+        changes="${changes}    Percentage of covered conditions increased by PR: $condition_outcomes_covered_diff_percent%\n"
+      fi
+    
       # Check for condition_outcomes_out_of_diff
       if [ "$condition_outcomes_out_of_diff" -gt 0 ]; then
         changes="${changes}    Number of conditions removed by PR: $(abs $condition_outcomes_out_of_diff)\n"
