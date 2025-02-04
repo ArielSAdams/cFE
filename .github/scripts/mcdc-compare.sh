@@ -117,7 +117,7 @@ compare_mcdc_results() {
     echo "Differences:"
     echo "  Total files processed difference: $total_files_diff"
     echo "  No condition data difference: $no_condition_data_diff"
-    echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent%"
+    echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent"
     echo "  Out of value difference: $condition_outcomes_out_of_diff"
     echo ""
 
