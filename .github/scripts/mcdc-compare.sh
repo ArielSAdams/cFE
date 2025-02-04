@@ -87,10 +87,10 @@ compare_mcdc_results() {
     echo "Differences:"
 
     # Print differences for all values
-    echo "  Total files processed difference: $(abs $total_files_diff)"
-    echo "  No condition data difference: $(abs $no_condition_data_diff)"
+    echo "  Total files processed difference: $total_files_diff"
+    echo "  No condition data difference: $no_condition_data_diff"
     echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent%"
-    echo "  Out of value difference: $(abs $condition_outcomes_out_of_diff)"
+    echo "  Out of value difference: $condition_outcomes_out_of_diff"
 
     # Check for other differences (not applying abs here)
     if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$condition_outcomes_covered_diff_percent" -ne 0 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
@@ -98,28 +98,28 @@ compare_mcdc_results() {
 
       # Check for total_files_diff
       if [ "$total_files_diff" -gt 0 ]; then
-        changes="${changes}    Number of processed files removed by PR: $(abs $total_files_diff)\n"
+        changes="${changes}    Number of processed files removed by PR: $total_files_diff\n"
       elif [ "$total_files_diff" -lt 0 ]; then
         changes="${changes}    Number of processed files added by PR: $(abs $total_files_diff)\n"
       fi
 
       # Check for no_condition_data_diff
       if [ "$no_condition_data_diff" -gt 0 ]; then
-        changes="${changes}    Number of files with no condition data removed by PR: $(abs $no_condition_data_diff)\n"
+        changes="${changes}    Number of files with no condition data removed by PR: $no_condition_data_diff\n"
       elif [ "$no_condition_data_diff" -lt 0 ]; then
         changes="${changes}    Number of files with no condition data added by PR: $(abs $no_condition_data_diff)\n"
       fi
 
       # Determine if the percentage increased or decreased (keep the sign)
       if [ $(echo "$condition_outcomes_covered_diff_percent > 0" | bc) -eq 1 ]; then
-        changes="${changes}    Percentage of covered conditions reduced by PR: $(abs $condition_outcomes_covered_diff_percent)%\n"
+        changes="${changes}    Percentage of covered conditions reduced by PR: $condition_outcomes_covered_diff_percent%\n"
       elif [ $(echo "$condition_outcomes_covered_diff_percent < 0" | bc) -eq 1 ]; then
         changes="${changes}    Percentage of covered conditions increased by PR: $(abs $condition_outcomes_covered_diff_percent)%\n"
       fi
     
       # Check for condition_outcomes_out_of_diff
       if [ "$condition_outcomes_out_of_diff" -gt 0 ]; then
-        changes="${changes}    Number of conditions removed by PR: $(abs $condition_outcomes_out_of_diff)\n"
+        changes="${changes}    Number of conditions removed by PR: $condition_outcomes_out_of_diff\n"
       elif [ "$condition_outcomes_out_of_diff" -lt 0 ]; then
         changes="${changes}    Number of conditions added by PR: $(abs $condition_outcomes_out_of_diff)\n"
       fi
