@@ -179,9 +179,9 @@ Creating 'cfe_config_get.c.gcov'
 
 Lines executed:100.00% of 54
 Summary for coverage-config-ALL module:
-  Total files processed: 8
-  Number of files with no condition data: 0
-  Condition outcomes covered: 100.00% of 168
+  Total files processed: 2
+  Number of files with no condition data: 10
+  Condition outcomes covered: 50.10% of 68
  
  
 Processing coverage-es-ALL module...
@@ -791,9 +791,9 @@ Creating 'cfe_es_backgroundtask.c.gcov'
 
 Lines executed:100.00% of 50
 Summary for coverage-es-ALL module:
-  Total files processed: 30
-  Number of files with no condition data: 0
-  Condition outcomes covered: 98.97% of 2920
+  Total files processed: 10
+  Number of files with no condition data: 3
+  Condition outcomes covered: 98.98% of 2920
  
  
 Processing coverage-evs-ALL module...
