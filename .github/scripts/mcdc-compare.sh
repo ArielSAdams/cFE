@@ -77,22 +77,43 @@ compare_mcdc_results() {
     if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
       # Accumulate changes in the modules_with_changes variable
       changes=""
-      if [ "$total_files_diff" -ne 0 ]; then
-        changes="${changes}  Total files processed difference: $total_files_diff\n"
+
+      # Subracting Main Branch Results by PR Results
+      # If positive number, then PR removed items
+      
+      # Check for total_files_diff
+      if [ "$total_files_diff" -gt 0 ]; then
+        changes="${changes}  Number of processed files removed by PR: $total_files_diff\n"
+      elif [ "$total_files_diff" -lt 0 ]; then
+        changes="${changes}  Number of processed files added by PR: $total_files_diff\n"
       fi
-      if [ "$no_condition_data_diff" -ne 0 ]; then
-        changes="${changes}  Number of files with no condition data difference: $no_condition_data_diff\n"
+    
+      # Check for no_condition_data_diff
+      if [ "$no_condition_data_diff" -gt 0 ]; then
+        changes="${changes}  Number of files with no condition data removed by PR: $no_condition_data_diff\n"
+      elif [ "$no_condition_data_diff" -lt 0 ]; then
+        changes="${changes}  Number of files with no condition data added by PR: $no_condition_data_diff\n"
       fi
+    
+      # Check for condition_outcomes_covered_diff_percent
       if [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ]; then
-        changes="${changes}  Condition outcomes covered difference: $condition_outcomes_covered_diff_percent%\n"
+        if [ "$(echo "$condition_outcomes_covered_diff_percent > 0" | bc)" -eq 1 ]; then
+          changes="${changes}  Number of covered conditions removed by PR: $condition_outcomes_covered_diff_percent%\n"
+        elif [ "$(echo "$condition_outcomes_covered_diff_percent < 0" | bc)" -eq 1 ]; then
+          changes="${changes}  Number of covered conditions added by PR: $condition_outcomes_covered_diff_percent%\n"
+        fi
       fi
-      if [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
-        changes="${changes}  'Out of' value difference: $condition_outcomes_out_of_diff\n"
+    
+      # Check for condition_outcomes_out_of_diff
+      if [ "$condition_outcomes_out_of_diff" -gt 0 ]; then
+        changes="${changes}  Number of conditions removed by PR: $condition_outcomes_out_of_diff\n"
+      elif [ "$condition_outcomes_out_of_diff" -lt 0 ]; then
+        changes="${changes}  Number of conditions added by PR: $condition_outcomes_out_of_diff\n"
       fi
 
-      modules_with_changes="${modules_with_changes}Module: $module\n$changes\n"
+      modules_with_changes="${modules_with_changes}  $module\n$changes\n"
     else
-      modules_without_changes="${modules_without_changes}  Module: $module - No change\n"
+      modules_without_changes="${modules_without_changes}  $module\n"
     fi
   done # This is the end of the for loop, make sure there's a done here
   
