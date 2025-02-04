@@ -77,6 +77,11 @@ compare_mcdc_results() {
 
     read pr_total_files pr_no_condition pr_condition_covered_percent pr_condition_out_of <<< $(extract_module_numbers "$pr_results_file" "$module")
 
+    # Echo results for each module
+    echo -e "\nResults for module: $module"
+    echo "Main Branch - Total files processed: $main_total_files, No condition data: $main_no_condition, Covered condition %: $main_condition_covered_percent%, Out of value: $main_condition_out_of"
+    echo "PR Branch - Total files processed: $pr_total_files, No condition data: $pr_no_condition, Covered condition %: $pr_condition_covered_percent%, Out of value: $pr_condition_out_of"
+   
     # Initialize variables to store differences
     total_files_diff=""
     no_condition_data_diff=""
@@ -87,37 +92,34 @@ compare_mcdc_results() {
     if [ -n "$main_total_files" ] && [ -n "$pr_total_files" ]; then
       total_files_diff=$((main_total_files - pr_total_files))
     else
-      echo "Skipping calculation for Total files processed for module '$module' because data is missing."
+      echo "- Skipping calculation for Total files processed for module '$module' because data is missing."
       total_files_diff="N/A"
     fi
     if [ -n "$main_no_condition" ] && [ -n "$pr_no_condition" ]; then
       no_condition_data_diff=$((main_no_condition - pr_no_condition))
     else
-      echo "Skipping calculation for Number of files with no condition data for module '$module' because data is missing."
+      echo "- Skipping calculation for Number of files with no condition data for module '$module' because data is missing."
       no_condition_data_diff="N/A"
     fi
     if [ -n "$main_condition_covered_percent" ] && [ -n "$pr_condition_covered_percent" ]; then
       condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
     else
-      echo "Skipping calculation for Condition outcomes covered percentage for module '$module' because data is missing."
+      echo "- Skipping calculation for Condition outcomes covered percentage for module '$module' because data is missing."
       condition_outcomes_covered_diff_percent="N/A"
     fi
     if [ -n "$main_condition_out_of" ] && [ -n "$pr_condition_out_of" ]; then
       condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
     else
-      echo "Skipping calculation for Out of value for module '$module' because data is missing."
+      echo "- Skipping calculation for Out of value for module '$module' because data is missing."
       condition_outcomes_out_of_diff="N/A"
     fi
 
-    # Echo results for each module
-    echo -e "\nResults for module: $module"
-    echo "Main Branch - Total files processed: $main_total_files, No condition data: $main_no_condition, Covered condition %: $main_condition_covered_percent%, Out of value: $main_condition_out_of"
-    echo "PR Branch - Total files processed: $pr_total_files, No condition data: $pr_no_condition, Covered condition %: $pr_condition_covered_percent%, Out of value: $pr_condition_out_of"
     echo "Differences:"
     echo "  Total files processed difference: $total_files_diff"
     echo "  No condition data difference: $no_condition_data_diff"
     echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent%"
     echo "  Out of value difference: $condition_outcomes_out_of_diff"
+    echo ""
 
     # Check for differences and print only the available data
     changes=""
@@ -169,9 +171,8 @@ compare_mcdc_results() {
   done # End of the for loop
 
   # Echo results 
-  echo "Comparison of MCDC results between Main Branch and PR:"
+  echo "\nComparison of MCDC results between Main Branch and PR:"
   echo ""
-  echo " "
   echo "Modules with changes:" 
   echo -e "$modules_with_changes" 
   echo "Modules without changes:" 
