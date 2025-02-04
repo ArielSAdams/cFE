@@ -119,6 +119,7 @@ compare_mcdc_results() {
       total_files_diff=$((main_total_files - pr_total_files))
     else
       echo "Skipping calculation for Total files processed for module '$module' because data is missing."
+      total_files_diff="N/A"
     fi
     if [ -n "$main_no_condition" ] && [ -n "$pr_no_condition" ]; then
       no_condition_data_diff=$((main_no_condition - pr_no_condition))
