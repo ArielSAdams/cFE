@@ -108,12 +108,6 @@ compare_mcdc_results() {
       fi
     fi
 
-    # If module is missing from either branch, skip comparison for this module
-    if [ -z "$main_total_files" ] || [ -z "$pr_total_files" ]; then
-      echo "Skipping module '$module' because it is missing from either the main branch or PR branch."
-      continue
-    fi
-
     # Initialize variables to store differences
     total_files_diff=""
     no_condition_data_diff=""
@@ -202,29 +196,21 @@ compare_mcdc_results() {
       fi
     fi
 
-
+    # If there were changes, add to the respective list
     if [ -n "$changes" ]; then
-
-      modules_with_changes="${modules_with_changes}  $module\n$changes\n"
+      modules_with_changes="${modules_with_changes}${module}:\n$changes"
     else
-      modules_without_changes="${modules_without_changes}  $module\n"
+      modules_without_changes="${modules_without_changes}${module}\n"
     fi
-  done # End of the for loop
+  done
 
-  # Write results to comparison_results.txt
-  echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
-  echo "" >> comparison_results.txt
-  echo "Modules with changes:" >> comparison_results.txt
-  echo -e "$modules_with_changes" >> comparison_results.txt
-  echo "Modules without changes:" >> comparison_results.txt
-  echo -e "$modules_without_changes" >> comparison_results.txt
+  # Output the results at the end
+  echo -e "\nModules with changes:"
+  echo -e "$modules_with_changes"
+
+  echo -e "\nModules without changes:"
+  echo -e "$modules_without_changes"
 }
 
-# Check the script arguments
-if [ $# -ne 3 ]; then
-  echo "Usage: $0 <main_results_file> <pr_results_file> <modules_file>"
-  exit 1
-fi
-
-# Run the comparison function with the provided arguments
-compare_mcdc_results "$1" "$2" "$3"
+# Usage example
+compare_mcdc_results "main_results.txt" "pr_results.txt" "modules.txt"
