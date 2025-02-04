@@ -216,3 +216,12 @@ jobs:
                   body: mcdcResults,
                 });
               }
+              
+      - name: Archive mcdc comparison
+        # Upload if success or failure which supports skipping, unlike always()
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MC/DC main branch comparison
+          path: |
+            comparison_results.txt
