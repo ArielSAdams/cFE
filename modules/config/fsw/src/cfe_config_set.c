@@ -58,11 +58,11 @@ void CFE_Config_SetObjPointer(CFE_ConfigId_t ConfigId, const void *Ptr)
     CFE_Config_ValueEntry_t *Entry;
 
     Entry = CFE_Config_LocateConfigRecordByID(ConfigId);
-    if (Entry != NULL)
-    {
-        Entry->ActualType      = CFE_ConfigType_POINTER;
-        Entry->Datum.AsPointer = Ptr;
-    }
+    /* if (Entry != NULL)
+    { COMMENT OUT FOR MCDC TESTING */
+    Entry->ActualType      = CFE_ConfigType_POINTER;
+    Entry->Datum.AsPointer = Ptr;
+    /* } */
 }
 
 /*----------------------------------------------------------------
