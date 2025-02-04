@@ -93,8 +93,8 @@ compare_mcdc_results() {
     echo "  Covered condition % difference: $(abs $condition_outcomes_covered_diff_percent)%"
     echo "  Out of value difference: $(abs $condition_outcomes_out_of_diff)"
 
-    # Check if there are differences
-    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$condition_outcomes_covered_diff_percent" -ne 0 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
+    # Check if there are differences (handling decimal comparisons)
+    if [ "$(echo "$total_files_diff" | bc)" -ne 0 ] || [ "$(echo "$no_condition_data_diff" | bc)" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent" | bc)" != "0" ] || [ "$(echo "$condition_outcomes_out_of_diff" | bc)" -ne 0 ]; then
       # Accumulate changes in the modules_with_changes variable
       changes=""
 
@@ -116,10 +116,10 @@ compare_mcdc_results() {
       fi
 
       # Check for condition_outcomes_covered_diff_percent
-      if [ "$condition_outcomes_covered_diff_percent" -ne 0 ]; then
-        if [ "$condition_outcomes_covered_diff_percent" -gt 0 ]; then
+      if [ "$(echo "$condition_outcomes_covered_diff_percent" | bc)" != "0" ]; then
+        if [ "$(echo "$condition_outcomes_covered_diff_percent" | bc)" -gt 0 ]; then
           changes="${changes}    Percentage of covered conditions reduced by PR: $(abs $condition_outcomes_covered_diff_percent)%\n"
-        elif [ "$condition_outcomes_covered_diff_percent" -lt 0 ]; then
+        elif [ "$(echo "$condition_outcomes_covered_diff_percent" | bc)" -lt 0 ]; then
           changes="${changes}    Percentage of covered conditions increased by PR: $(abs $condition_outcomes_covered_diff_percent)%\n"
         fi
       fi
