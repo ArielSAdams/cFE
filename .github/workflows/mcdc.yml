@@ -222,6 +222,6 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
-          name: MC/DC main branch comparison
+          name: MCDC main branch comparison
           path: |
             comparison_results.txt
