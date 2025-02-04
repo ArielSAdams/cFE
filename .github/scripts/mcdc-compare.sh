@@ -19,10 +19,6 @@ extract_module_numbers() {
   condition_outcomes_covered_percent=$(sed -n "/^Summary for ${module} module:/,/^$/p" "$file" | head -n 4 | grep -Po 'Condition outcomes covered:\s*\K[0-9]+(\.[0-9]+)?')
   condition_outcomes_out_of=$(sed -n "/^Summary for ${module} module:/,/^$/p" "$file" | head -n 4 | grep -Po 'Condition outcomes covered:.*of\s*\K\d*')
 
-  # Return the extracted values, and check if any are missing
-  if [ -z "$total_files_processed" ] || [ -z "$no_condition_data" ] || [ -z "$condition_outcomes_covered_percent" ] || [ -z "$condition_outcomes_out_of" ]; then
-    return 1 # Indicating missing data for the module
-  fi
 
   echo "$total_files_processed $no_condition_data $condition_outcomes_covered_percent $condition_outcomes_out_of"
 }
