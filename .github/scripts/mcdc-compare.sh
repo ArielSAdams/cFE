@@ -69,6 +69,7 @@ compare_mcdc_results() {
   # Initialize variables to store the output for modules with and without changes
   modules_with_changes=""
   modules_without_changes=""
+  modules_missing=""
 
   # Loop through all modules to compare each one
   for module in $modules; do
@@ -106,12 +107,6 @@ compare_mcdc_results() {
       if [ -z "$pr_condition_out_of" ]; then
         echo "  - Missing Out of value in PR branch."
       fi
-    fi
-
-    # If module is missing from either branch, skip comparison for this module
-    if [ -z "$main_total_files" ] || [ -z "$pr_total_files" ]; then
-      echo "Skipping module '$module' because it is missing from either the main branch or PR branch."
-      continue
     fi
 
     # Initialize variables to store differences
@@ -211,13 +206,19 @@ compare_mcdc_results() {
     fi
   done # End of the for loop
 
-  # Write results to comparison_results.txt
+  # Echo results 
+  echo "Comparison of MCDC results between Main Branch and PR:"
+  echo ""
+  echo "Modules with changes:" 
+  echo -e "$modules_with_changes" 
+  echo "Modules without changes:" 
+  echo -e "$modules_without_changes" 
+  
+  # Write results to comparison_results.txt / pull request
   echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
   echo "" >> comparison_results.txt
   echo "Modules with changes:" >> comparison_results.txt
   echo -e "$modules_with_changes" >> comparison_results.txt
-  echo "Modules without changes:" >> comparison_results.txt
-  echo -e "$modules_without_changes" >> comparison_results.txt
 }
 
 # Check the script arguments
