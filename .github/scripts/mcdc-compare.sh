@@ -30,7 +30,11 @@ extract_module_numbers() {
 
 # Function to get absolute value of a number
 abs() {
-  echo $(($1 * ( ($1 < 0) * -2 + 1 ) ))
+  if [ "$1" -lt 0 ]; then
+    echo $((-$1))
+  else
+    echo "$1"
+  fi
 }
 
 # Compare results for each module between two files
@@ -75,7 +79,8 @@ compare_mcdc_results() {
     # Calculate absolute differences
     total_files_diff=$(abs $((main_total_files - pr_total_files)))
     no_condition_data_diff=$(abs $((main_no_condition - pr_no_condition)))
-    condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc | abs)
+    condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
+    condition_outcomes_covered_diff_percent=$(abs $condition_outcomes_covered_diff_percent)
     condition_outcomes_out_of_diff=$(abs $((main_condition_out_of - pr_condition_out_of)))
 
     # Echo results for each module
@@ -90,7 +95,7 @@ compare_mcdc_results() {
 
 
     # Check if there are differences
-    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
+    if [ "$total_files_diff" -ne 0 ] || [ "$no_condition_data_diff" -ne 0 ] || [ "$condition_outcomes_covered_diff_percent" -ne 0 ] || [ "$condition_outcomes_out_of_diff" -ne 0 ]; then
       # Accumulate changes in the modules_with_changes variable
       changes=""
 
@@ -112,10 +117,10 @@ compare_mcdc_results() {
       fi
     
       # Check for condition_outcomes_covered_diff_percent
-      if [ "$(echo "$condition_outcomes_covered_diff_percent != 0" | bc)" -eq 1 ]; then
-        if [ "$(echo "$condition_outcomes_covered_diff_percent > 0" | bc)" -eq 1 ]; then
+      if [ "$condition_outcomes_covered_diff_percent" -ne 0 ]; then
+        if [ "$condition_outcomes_covered_diff_percent" -gt 0 ]; then
           changes="${changes}    Percentage of covered conditions reduced by PR: $condition_outcomes_covered_diff_percent%\n"
-        elif [ "$(echo "$condition_outcomes_covered_diff_percent < 0" | bc)" -eq 1 ]; then
+        elif [ "$condition_outcomes_covered_diff_percent" -lt 0 ]; then
           changes="${changes}    Percentage of covered conditions increased by PR: $condition_outcomes_covered_diff_percent%\n"
         fi
       fi
