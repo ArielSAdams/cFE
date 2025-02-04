@@ -69,7 +69,6 @@ compare_mcdc_results() {
   # Initialize variables to store the output for modules with and without changes
   modules_with_changes=""
   modules_without_changes=""
-  modules_missing=""
 
   # Loop through all modules to compare each one
   for module in $modules; do
@@ -125,16 +124,19 @@ compare_mcdc_results() {
       no_condition_data_diff=$((main_no_condition - pr_no_condition))
     else
       echo "Skipping calculation for Number of files with no condition data for module '$module' because data is missing."
+      no_condition_data_diff="N/A"
     fi
     if [ -n "$main_condition_covered_percent" ] && [ -n "$pr_condition_covered_percent" ]; then
       condition_outcomes_covered_diff_percent=$(echo "$main_condition_covered_percent - $pr_condition_covered_percent" | bc)
     else
       echo "Skipping calculation for Condition outcomes covered percentage for module '$module' because data is missing."
+      condition_outcomes_covered_diff_percent="N/A"
     fi
     if [ -n "$main_condition_out_of" ] && [ -n "$pr_condition_out_of" ]; then
       condition_outcomes_out_of_diff=$((main_condition_out_of - pr_condition_out_of))
     else
       echo "Skipping calculation for Out of value for module '$module' because data is missing."
+      condition_outcomes_out_of_diff="N/A"
     fi
 
     # Echo results for each module
@@ -142,26 +144,16 @@ compare_mcdc_results() {
     echo "Main Branch - Total files processed: $main_total_files, No condition data: $main_no_condition, Covered condition %: $main_condition_covered_percent%, Out of value: $main_condition_out_of"
     echo "PR Branch - Total files processed: $pr_total_files, No condition data: $pr_no_condition, Covered condition %: $pr_condition_covered_percent%, Out of value: $pr_condition_out_of"
     echo "Differences:"
-
-    # Print differences for only the available data
-    if [ -n "$total_files_diff" ]; then
-      echo "  Total files processed difference: $total_files_diff"
-    fi
-    if [ -n "$no_condition_data_diff" ]; then
-      echo "  No condition data difference: $no_condition_data_diff"
-    fi
-    if [ -n "$condition_outcomes_covered_diff_percent" ]; then
-      echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent%"
-    fi
-    if [ -n "$condition_outcomes_out_of_diff" ]; then
-      echo "  Out of value difference: $condition_outcomes_out_of_diff"
-    fi
+    echo "  Total files processed difference: $total_files_diff"
+    echo "  No condition data difference: $no_condition_data_diff"
+    echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent%"
+    echo "  Out of value difference: $condition_outcomes_out_of_diff"
 
     # Check for differences and print only the available data
     changes=""
 
-    if [ -n "$total_files_diff" ]; then
-
+    if [ "$total_files_diff" != "N/A" ]; then
+    
       if [ "$total_files_diff" -gt 0 ]; then
         changes="${changes}    Number of processed files removed by PR: $total_files_diff\n"
       elif [ "$total_files_diff" -lt 0 ]; then
@@ -170,7 +162,7 @@ compare_mcdc_results() {
 
     fi
 
-    if [ -n "$no_condition_data_diff" ]; then
+    if [ "$no_condition_data_diff" != "N/A" ]; then
 
       if [ "$no_condition_data_diff" -gt 0 ]; then
         changes="${changes}    Number of files with no condition data removed by PR: $no_condition_data_diff\n"
@@ -180,7 +172,7 @@ compare_mcdc_results() {
 
     fi
 
-    if [ -n "$condition_outcomes_covered_diff_percent" ]; then
+    if [ "$condition_outcomes_covered_diff_percent" != "N/A" ]; then
 
       if [ $(echo "$condition_outcomes_covered_diff_percent > 0" | bc) -eq 1 ]; then
         changes="${changes}    Percentage of covered conditions reduced by PR: $condition_outcomes_covered_diff_percent%\n"
@@ -189,7 +181,7 @@ compare_mcdc_results() {
       fi
     fi
 
-    if [ -n "$condition_outcomes_out_of_diff" ]; then
+    if [ "$condition_outcomes_out_of_diff" != "N/A" ]; then
       if [ "$condition_outcomes_out_of_diff" -gt 0 ]; then
         changes="${changes}    Number of conditions removed by PR: $condition_outcomes_out_of_diff\n"
       elif [ "$condition_outcomes_out_of_diff" -lt 0 ]; then
