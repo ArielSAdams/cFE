@@ -225,4 +225,4 @@ jobs:
           name: MCDC main branch comparison
           path: |
             mcdc_comment.txt
-            mcdc_commpare.txt
+            mcdc_compare.txt
