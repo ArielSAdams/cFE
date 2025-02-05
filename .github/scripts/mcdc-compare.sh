@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exec > >(tee -a mcdc_compare.txt) 2>&1
+
 # Function to check if a file exists and return an error message for missing files
 check_file_exists() {
   file=$1
@@ -156,11 +158,11 @@ compare_mcdc_results() {
   echo "Modules without changes:" 
   echo -e "$modules_without_changes" 
   
-  # Write results to comparison_results.txt / pull request
-  echo "Comparison of MCDC results between Main Branch and PR:" > comparison_results.txt
-  echo "" >> comparison_results.txt
-  echo "Modules with changes:" >> comparison_results.txt
-  echo -e "$modules_with_changes" >> comparison_results.txt
+  # Write results to mcdc_comment.txt / pull request
+  echo "Comparison of MCDC results between Main Branch and PR:" > mcdc_comment.txt
+  echo "" >> mcdc_comment.txt
+  echo "Modules with changes:" >> mcdc_comment.txt
+  echo -e "$modules_with_changes" >> mcdc_comment.txt
 }
 
 # Check the script arguments
