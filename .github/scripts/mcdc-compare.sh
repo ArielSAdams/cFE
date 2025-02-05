@@ -160,10 +160,12 @@ compare_mcdc_results() {
   
   # Write results to mcdc_comment.txt / pull request if changes exists 
   if [ -n "$modules_with_changes" ]; then
-    echo "Comparison of MCDC results between Main Branch and PR:" > mcdc_comment.txt
+    echo "Comparison of MC/DC results between Main Branch and PR:" > mcdc_comment.txt
     echo "" >> mcdc_comment.txt
     echo "Modules with changes:" >> mcdc_comment.txt
     echo -e "$modules_with_changes" >> mcdc_comment.txt
+  else 
+    echo "No MC/DC changes were made." > mcdc_comment.txt
   fi
   
 }
