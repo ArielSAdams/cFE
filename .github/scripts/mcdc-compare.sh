@@ -158,11 +158,14 @@ compare_mcdc_results() {
   echo "Modules without changes:" 
   echo -e "$modules_without_changes" 
   
-  # Write results to mcdc_comment.txt / pull request
-  echo "Comparison of MCDC results between Main Branch and PR:" > mcdc_comment.txt
-  echo "" >> mcdc_comment.txt
-  echo "Modules with changes:" >> mcdc_comment.txt
-  echo -e "$modules_with_changes" >> mcdc_comment.txt
+  # Write results to mcdc_comment.txt / pull request if changes exists 
+  if [ -n "$modules_with_changes" ]; then
+    echo "Comparison of MCDC results between Main Branch and PR:" > mcdc_comment.txt
+    echo "" >> mcdc_comment.txt
+    echo "Modules with changes:" >> mcdc_comment.txt
+    echo -e "$modules_with_changes" >> mcdc_comment.txt
+  fi
+  
 }
 
 # Check the script arguments
