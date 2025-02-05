@@ -167,52 +167,68 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-              const path = require('path');
-              // Adjust the path based on where you see mcdc_results.txt after running the 'ls' command
-              const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'mcdc_comment.txt');
-              // Debugging: Check if the file exists at the adjusted path
-              if (!fs.existsSync(mcdcResultsFilePath)) {
-                console.log('mcdc_comment.txt file not found at path: ' + mcdcResultsFilePath);
-                return;
+            const path = require('path');
+            // Adjust the path based on where you see mcdc_results.txt after running the 'ls' command
+            const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'mcdc_comment.txt');
+            
+            // Debugging: Check if the file exists at the adjusted path
+            if (!fs.existsSync(mcdcResultsFilePath)) {
+              console.log('mcdc_comment.txt file not found at path: ' + mcdcResultsFilePath);
+              return;
+            }
+            
+            // Read the file content
+            const mcdcResultsContent = fs.readFileSync(mcdcResultsFilePath, 'utf-8').trim();
+            
+            // If the file is empty, don't comment
+            if (mcdcResultsContent === '') {
+              console.log('mcdc_comment.txt is empty, no comment will be posted.');
+              return;
+            }
+      
+            const mcdcResults = `MCDC Results:
+            \`\`\`
+            ${mcdcResultsContent}
+            \`\`\`
+            `;
+      
+            // Ensure the correct path to the pr_number file after unzipping
+            const prNumberPath = path.join(process.env.GITHUB_WORKSPACE, 'pr_number');
+            if (!fs.existsSync(prNumberPath)) {
+              console.log('pr_number file not found at path: ' + prNumberPath);
+              return;
+            }
+            
+            const prNumber = Number(fs.readFileSync(prNumberPath));
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
               }
-              const mcdcResults = `MCDC Results:
-              \`\`\`
-              ${fs.readFileSync(mcdcResultsFilePath, 'utf-8')}
-              \`\`\`
-              `;
-              // Ensure the correct path to the pr_number file after unzipping
-              const prNumberPath = path.join(process.env.GITHUB_WORKSPACE, 'pr_number');
-              if (!fs.existsSync(prNumberPath)) {
-                console.log('pr_number file not found at path: ' + prNumberPath);
-                return;
-              }
-              const prNumber = Number(fs.readFileSync(prNumberPath));
-              const comments = await github.paginate(
-                github.rest.issues.listComments,
-                {
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                }
-              );
-              comments.reverse();
-              const previousComment = comments.find(comment =>
-                comment.user.login === 'github-actions[bot]'
-              );
-              if (previousComment) {
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: previousComment.id,
-                  body: mcdcResults,
-                });
-              } else {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  body: mcdcResults,
-                });
+            );
+            
+            comments.reverse();
+            const previousComment = comments.find(comment =>
+              comment.user.login === 'github-actions[bot]'
+            );
+            
+            if (previousComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: previousComment.id,
+                body: mcdcResults,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: mcdcResults,
+              });
+            }
 
               
       - name: Archive mcdc comparison
