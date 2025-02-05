@@ -170,10 +170,10 @@ jobs:
               const fs = require('fs');
               const path = require('path');
               // Adjust the path based on where you see mcdc_results.txt after running the 'ls' command
-              const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'comparison_results.txt');
+              const mcdcResultsFilePath = path.join(process.env.GITHUB_WORKSPACE, 'mcdc_comment.txt');
               // Debugging: Check if the file exists at the adjusted path
               if (!fs.existsSync(mcdcResultsFilePath)) {
-                console.log('comparison_results.txt file not found at path: ' + mcdcResultsFilePath);
+                console.log('mcdc_comment.txt file not found at path: ' + mcdcResultsFilePath);
                 return;
               }
               const mcdcResults = `MCDC Results:
@@ -224,4 +224,5 @@ jobs:
         with:
           name: MCDC main branch comparison
           path: |
-            comparison_results.txt
+            mcdc_comment.txt
+            mcdc_commpare.txt
