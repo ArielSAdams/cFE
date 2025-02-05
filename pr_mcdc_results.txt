@@ -39,23 +39,23 @@ Lines executed:100.00% of 85
 Processing corresponding .c file: build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_set.c.c
 Running gcov on build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_set.c.c...
 File '/__w/cFE/cFE/cfe/modules/config/fsw/src/cfe_config_set.c'
-Lines executed:100.00% of 23
-Branches executed:100.00% of 6
-Taken at least once:100.00% of 6
+Lines executed:100.00% of 24
+Branches executed:100.00% of 8
+Taken at least once:100.00% of 8
 Calls executed:100.00% of 4
-Condition outcomes covered:100.00% of 6
+Condition outcomes covered:100.00% of 8
 Creating 'cfe_config_set.c.gcov'
 
-Lines executed:100.00% of 23
+Lines executed:100.00% of 24
 File '/__w/cFE/cFE/cfe/modules/config/fsw/src/cfe_config_set.c'
-Lines executed:100.00% of 23
-Branches executed:100.00% of 6
-Taken at least once:100.00% of 6
+Lines executed:100.00% of 24
+Branches executed:100.00% of 8
+Taken at least once:100.00% of 8
 Calls executed:100.00% of 4
-Condition outcomes covered:100.00% of 6
+Condition outcomes covered:100.00% of 8
 Creating 'cfe_config_set.c.gcov'
 
-Lines executed:100.00% of 23
+Lines executed:100.00% of 24
 Processing corresponding .c file: build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_lookup.c.c
 Running gcov on build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_lookup.c.c...
 File '/__w/cFE/cFE/cfe/modules/config/fsw/src/cfe_config_lookup.c'
@@ -121,23 +121,23 @@ Lines executed:100.00% of 85
 Processing corresponding .c file: build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_set.c.c
 Running gcov on build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_set.c.c...
 File '/__w/cFE/cFE/cfe/modules/config/fsw/src/cfe_config_set.c'
-Lines executed:100.00% of 23
-Branches executed:100.00% of 6
-Taken at least once:100.00% of 6
+Lines executed:100.00% of 24
+Branches executed:100.00% of 8
+Taken at least once:100.00% of 8
 Calls executed:100.00% of 4
-Condition outcomes covered:100.00% of 6
+Condition outcomes covered:100.00% of 8
 Creating 'cfe_config_set.c.gcov'
 
-Lines executed:100.00% of 23
+Lines executed:100.00% of 24
 File '/__w/cFE/cFE/cfe/modules/config/fsw/src/cfe_config_set.c'
-Lines executed:100.00% of 23
-Branches executed:100.00% of 6
-Taken at least once:100.00% of 6
+Lines executed:100.00% of 24
+Branches executed:100.00% of 8
+Taken at least once:100.00% of 8
 Calls executed:100.00% of 4
-Condition outcomes covered:100.00% of 6
+Condition outcomes covered:100.00% of 8
 Creating 'cfe_config_set.c.gcov'
 
-Lines executed:100.00% of 23
+Lines executed:100.00% of 24
 Processing corresponding .c file: build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_lookup.c.c
 Running gcov on build/native/default_cpu1/config/ut-coverage/CMakeFiles/coverage-config-ALL-object.dir/__/fsw/src/cfe_config_lookup.c.c...
 File '/__w/cFE/cFE/cfe/modules/config/fsw/src/cfe_config_lookup.c'
@@ -179,9 +179,9 @@ Creating 'cfe_config_get.c.gcov'
 
 Lines executed:100.00% of 54
 Summary for coverage-config-ALL module:
-  Total files processed: 2
-  Number of files with no condition data: 10
-  Condition outcomes covered: 50.10% of 68
+  Total files processed: 80
+  Number of files with no condition data: 2
+  Condition outcomes covered: 100.00% of 12
  
  
 Processing coverage-es-ALL module...
@@ -790,6 +790,11 @@ Condition outcomes covered:81.82% of 22
 Creating 'cfe_es_backgroundtask.c.gcov'
 
 Lines executed:100.00% of 50
+Summary for coverage-es-ALL module:
+  Total files processed: 30
+  Number of files with no condition data: 0
+  Condition outcomes covered: 98.97% of 2920
+ 
  
 Processing coverage-evs-ALL module...
 No base directory provided: Searching for .gcda directory...
@@ -1000,7 +1005,7 @@ Lines executed:100.00% of 130
 Summary for coverage-evs-ALL module:
   Total files processed: 10
   Number of files with no condition data: 0
-  Condition outcomes covered: 99.50% of 
+  Condition outcomes covered: 99.50% of 796
  
  
 Processing coverage-fs-ALL module...
@@ -1458,7 +1463,7 @@ Creating 'cfe_msg_init.c.gcov'
 
 Lines executed:100.00% of 9
 Summary for coverage-msg-ALL module:
-  Total files processed:
+  Total files processed: 16
   Number of files with no condition data: 2
   Condition outcomes covered: 95.89% of 292
  
@@ -1813,7 +1818,7 @@ Searching for .gcda files under parent directory: build/native/default_cpu1/sbr/
 No .gcda files found for sbr_map_direct_UT under parent directory build/native/default_cpu1/sbr/ut-coverage/CMakeFiles.
 Summary for sbr_map_direct_UT module:
   Total files processed: 0
-  Number of files with no condition data: 2
+  Number of files with no condition data: 0
   Condition outcomes covered: 0% of 0
  
  
@@ -1834,9 +1839,9 @@ Found module directory: build/native/default_cpu1/sbr/ut-coverage/CMakeFiles/sbr
 Searching for .gcda files under parent directory: build/native/default_cpu1/sbr/ut-coverage/CMakeFiles...
 No .gcda files found for sbr_route_unsorted_UT under parent directory build/native/default_cpu1/sbr/ut-coverage/CMakeFiles.
 Summary for sbr_route_unsorted_UT module:
-  Total files processed: 10
-  Number of files with no condition data: 10
-  Condition outcomes covered: 5% of 50
+  Total files processed: 0
+  Number of files with no condition data: 0
+  Condition outcomes covered: 0% of 0
  
  
 Processing coverage-tbl-ALL module...
@@ -2338,12 +2343,12 @@ Creating 'cfe_time_api.c.gcov'
 
 Lines executed:99.05% of 211
 Summary for coverage-time-ALL module:
-  Total files processed: 20
-  Number of files with no condition data: 5
-  Condition outcomes covered: 100.00% of 600
+  Total files processed: 15
+  Number of files with no condition data: 10
+  Condition outcomes covered: 90.63% of 54
  
  
 Overall summary:
   Total files processed: 108
   Number of files with no condition data: 2
-  Overall condition outcomes covered: 98.97% of 7552
+  Overall condition outcomes covered: 98.97% of 7556
