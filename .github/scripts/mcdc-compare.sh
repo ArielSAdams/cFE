@@ -86,7 +86,7 @@ compare_mcdc_results() {
     echo "  No condition data difference: $no_condition_data_diff"
     echo "  Covered condition % difference: $condition_outcomes_covered_diff_percent"
     echo "  Out of value difference: $condition_outcomes_out_of_diff"
-    echo ""
+    echo " "
 
     changes=""
 
@@ -121,7 +121,7 @@ compare_mcdc_results() {
     fi
   done
 
-  echo ""
+  echo " "
   echo "MC/DC results compared to latest dev branch:"
   echo " "
   echo "Modules with changes:" 
