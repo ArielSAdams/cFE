@@ -121,8 +121,9 @@ compare_mcdc_results() {
     fi
   done
 
-  echo "\nMC/DC results compared to latest dev branch:"
   echo ""
+  echo "MC/DC results compared to latest dev branch:"
+  echo " "
   echo "Modules with changes:" 
   echo -e "$modules_with_changes" 
   echo "Modules without changes:" 
