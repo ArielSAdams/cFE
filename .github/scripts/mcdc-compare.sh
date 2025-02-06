@@ -66,9 +66,9 @@ compare_mcdc_results() {
 
     # Echo numbers extracted from each file for each module 
     echo -e "\nResults for module: $module"
-    echo "Main Branch - Total files processed: $main_total_files, No condition data: $main_no_condition, Covered condition %: $main_condition_covered_percent%, Out of value: $main_condition_out_of"
     echo "PR Branch - Total files processed: $pr_total_files, No condition data: $pr_no_condition, Covered condition %: $pr_condition_covered_percent%, Out of value: $pr_condition_out_of"
-   
+    echo "Main Branch - Total files processed: $main_total_files, No condition data: $main_no_condition, Covered condition %: $main_condition_covered_percent%, Out of value: $main_condition_out_of"
+
     # Initialize variables to store differences
     total_files_diff=""
     no_condition_data_diff=""
